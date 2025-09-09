@@ -1,79 +1,211 @@
 // Artist Profile Data
 const artistProfiles = [
     {
-        id: 'teamlab',
-        name: 'TEAMLAB',
-        subtitle: 'DIGITAL ART COLLECTIVE',
-        year: '2001 - PRESENT',
-        description: 'TeamLab creates immersive digital art experiences that blur boundaries between art, science, technology, and nature. Their borderless exhibitions redefine spatial relationships through interactive installations.',
-        background: 'linear-gradient(135deg, #1a237e 0%, #3949ab 50%, #5c6bc0 100%)',
-        metrics: {
-            projects: '150+',
-            venues: '50+',
-            visitors: '5.2M'
+        id: 'ei-wada',
+        name: 'EI WADA',
+        subtitle: 'ELECTRONICOS FANTÁSTICOS',
+        year: 'INTERACTIVE SOUND PIONEER',
+        description: 'Ei Wada creates orchestra performances using vintage electronics as instruments, transforming discarded technology into symphonic experiences. His barcode scanner concerts turn everyday objects into musical interfaces.',
+        background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffd23f 100%)',
+        backgroundImage: 'https://images.squarespace-cdn.com/content/v1/56f4abb9e707eb33bf4e9fef/7f5a29b9-45fe-493c-b0c6-e8e8e78f4095/TRIO-bure_fix.jpg?format=2500w',
+        artistPhoto: '',
+        social: {
+            handle: '@crabfeet',
+            url: 'https://x.com/crab_feet'
         },
-        tags: ['INTERACTIVE ART', 'PROJECTION MAPPING', 'AI COLLABORATION', 'BORDERLESS SPACE', 'NATURE SIMULATION'],
+        isCurrentlyTrending: true,
+        metrics: {
+            projects: '50+',
+            performances: '200+',
+            countries: '15+'
+        },
+        tags: ['INTERACTIVE SOUND', 'ELECTRONIC ORCHESTRA', 'VINTAGE TECH', 'BARCODE PERFORMANCE', 'SOUND ART'],
         trending: [
-            { title: 'Borderless World Tokyo', location: 'Odaiba' },
-            { title: 'Planets Exhibition', location: 'Toyosu' },
-            { title: 'Forest of Resonating Lamps', location: 'Global Tour' }
+            { title: 'Braun Tube Jazz Band', location: 'Tokyo', url: 'https://www.electronicosfantasticos.com' },
+            { title: 'Shopping Cart Orchestra', location: 'Global Tour', url: 'https://www.electronicosfantasticos.com/projects' },
+            { title: 'Electronicos Fantasticos!', location: 'Ars Electronica', url: 'https://ars.electronica.art' }
         ]
     },
     {
-        id: 'rhizomatiks',
-        name: 'RHIZOMATIKS',
-        subtitle: 'RESEARCH & PERFORMANCE',
-        year: '2006 - PRESENT',
-        description: 'Rhizomatiks Research explores the potential of technology as a medium for artistic expression, creating performances that merge human movement with digital precision and data visualization.',
-        background: 'linear-gradient(135deg, #b71c1c 0%, #e53935 50%, #ef5350 100%)',
-        metrics: {
-            projects: '200+',
-            venues: '35+',
-            visitors: '3.1M'
+        id: 'yoichi-ochiai',
+        name: 'YOICHI OCHIAI',
+        subtitle: 'DIGITAL NATURE',
+        year: 'WOW ORCHESTRA CONDUCTOR',
+        description: 'Yoichi Ochiai bridges physical and digital realms through his WoW orchestra, where audience members become performers through real-time collaboration technology and interactive media art.',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+        backgroundImage: 'https://www.w0w.co.jp/filestore/0000000/0006615.jpg',
+        artistPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        social: {
+            handle: '@ochyai',
+            url: 'https://twitter.com/ochyai'
         },
-        tags: ['MOTION CAPTURE', 'DATA VISUALIZATION', 'LIVE PERFORMANCE', 'DRONE CHOREOGRAPHY', 'AR INTEGRATION'],
+        isCurrentlyTrending: true,
+        metrics: {
+            research: '100+',
+            installations: '80+',
+            followers: '500K+'
+        },
+        tags: ['AUDIENCE COLLABORATION', 'DIGITAL NATURE', 'INTERACTIVE MEDIA', 'RESEARCH ART', 'REAL-TIME PERFORMANCE'],
         trending: [
-            { title: 'ELEVENPLAY Collaboration', location: 'Shibuya' },
-            { title: 'Perfume Live Concert Tech', location: 'Tokyo Dome' },
-            { title: 'Olympic Opening Ceremony', location: 'National Stadium' }
+            { title: 'WoW Orchestra Live', location: 'Various Venues', url: 'https://www.youtube.com/watch?v=example' },
+            { title: 'Digital Nature Exhibition', location: 'Tokyo', url: 'https://digitalnature.slis.tsukuba.ac.jp' },
+            { title: 'Pixie Dust Technologies', location: 'Tech Research', url: 'https://pixiedusttech.com' }
         ]
     },
     {
-        id: 'exonemo',
-        name: 'EXONEMO',
-        subtitle: 'NET ART PIONEERS',
-        year: '1996 - PRESENT',
-        description: 'exonemo pioneers internet art and digital culture critique through glitch aesthetics, browser-based installations, and explorations of digital-physical boundaries in contemporary society.',
-        background: 'linear-gradient(135deg, #1b5e20 0%, #43a047 50%, #66bb6a 100%)',
-        metrics: {
-            projects: '80+',
-            venues: '25+',
-            visitors: '1.8M'
+        id: 'daito-manabe',
+        name: 'DAITO MANABE',
+        subtitle: 'RHIZOMATIKS',
+        year: 'HCI & PROJECTION MASTER',
+        description: 'Daito Manabe pushes the boundaries of human-computer interaction through facial muscle control, projection mapping, and data visualization. His work transforms the human body into a digital canvas.',
+        background: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 50%, #ff6b35 100%)',
+        backgroundImage: 'https://neocha-content.oss-cn-hongkong.aliyuncs.com/wp-content/uploads/sites/2/2020/09/daito-manabe-01.gif',
+        artistPhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
+        social: {
+            handle: '@daito',
+            url: 'https://twitter.com/daito'
         },
-        tags: ['NET ART', 'GLITCH AESTHETICS', 'BROWSER ART', 'DIGITAL CRITIQUE', 'INTERNET CULTURE'],
+        isCurrentlyTrending: false,
+        metrics: {
+            projects: '300+',
+            awards: '25+',
+            collaborations: '100+'
+        },
+        tags: ['HCI', 'PROJECTION MAPPING', 'FACIAL MUSCLE CONTROL', 'DATA VISUALIZATION', 'BODY INTERFACE'],
         trending: [
-            { title: 'The Road Movie', location: 'Online/Global' },
-            { title: 'Discoder Installation', location: 'ICC Tokyo' },
-            { title: 'Natural Process', location: 'Ars Electronica' }
+            { title: 'Face Visualizer', location: 'Global Exhibitions', url: 'https://www.rhizomatiks.com/en/work/face_visualizer/' },
+            { title: 'Perfume Technology', location: 'Concert Tours', url: 'https://www.youtube.com/watch?v=A6xNvYoVl1M' },
+            { title: 'Nike Air Max Installation', location: 'Brand Collaborations', url: 'https://www.rhizomatiks.com/en/work/nike/' }
         ]
     },
     {
-        id: 'sensorium',
-        name: 'SENSORIUM',
-        subtitle: 'SENSORY TECHNOLOGY',
-        year: '2010 - PRESENT',
-        description: 'Sensorium creates multisensory experiences using biometric data, environmental sensors, and responsive installations that react to human presence and emotional states in real-time.',
-        background: 'linear-gradient(135deg, #4a148c 0%, #7b1fa2 50%, #9c27b0 100%)',
-        metrics: {
-            projects: '45+',
-            venues: '20+',
-            visitors: '900K'
+        id: 'nobumichi-tosa',
+        name: 'NOBUMICHI TOSA',
+        subtitle: 'MEIWA DENKI',
+        year: 'OTAMATONE CREATOR',
+        description: 'Nobumichi Tosa creates wonderfully absurd electronic instruments and art objects. His Otamatone became a global phenomenon, bringing playful interaction to electronic music creation.',
+        background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #093637 100%)',
+        backgroundImage: 'https://prcdn.freetls.fastly.net/release_image/43036/10/43036-10-54a6d0d1956dba242a5dfa15ff1dcc09-2784x1856.jpg?format=jpeg&auto=webp&quality=85%2C65&width=1950&height=1350&fit=bounds',
+        artistPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        social: {
+            handle: '@maywadenki',
+            url: 'https://twitter.com/maywadenki'
         },
-        tags: ['BIOMETRIC ART', 'SENSOR NETWORKS', 'EMOTIONAL COMPUTING', 'RESPONSIVE SPACES', 'HUMAN-AI INTERACTION'],
+        isCurrentlyTrending: true,
+        metrics: {
+            instruments: '200+',
+            exhibitions: '150+',
+            years: '30+'
+        },
+        tags: ['ELECTRONIC INSTRUMENTS', 'QUIRKY DESIGN', 'OTAMATONE', 'ART OBJECTS', 'PLAYFUL TECH'],
         trending: [
-            { title: 'Pulse Chamber', location: 'Mori Art Museum' },
-            { title: 'Emotional Landscapes', location: 'Digital Art Fair' },
-            { title: 'Breathing Buildings', location: 'Architecture Biennale' }
+            { title: 'Otamatone Deluxe', location: 'Worldwide', url: 'https://otamatone.jp' },
+            { title: 'Nonsense Machine Exhibition', location: 'Tokyo', url: 'https://maywadenki.com' },
+            { title: 'Electronic Art Collective', location: 'Museum Shows', url: 'https://maywadenki.com/exhibition' }
+        ]
+    },
+    {
+        id: 'mae',
+        name: 'MAE',
+        subtitle: 'DIGITAL FASHION CURATOR',
+        year: 'CDG ARCHIVE SPECIALIST',
+        description: 'Mae (@maetomodayo) has built one of the most comprehensive Comme des Garçons collections, documenting fashion history through digital curation and creating virtual wardrobes that bridge physical and digital fashion.',
+        background: 'linear-gradient(135deg, #000000 0%, #434343 50%, #000000 100%)',
+        backgroundImage: 'https://fashionsnap-assets.com/asset/format=auto,width=1088/streetstyle/images/2025/09/08-29-25-52-03-7-b3b3696a-dc79-4b90-ab22-3b622ea492e5.jpg',
+        artistPhoto: 'https://images.unsplash.com/photo-1494790108755-2616c40c2c2f?w=150&h=150&fit=crop&crop=face',
+        social: {
+            handle: '@maetomodayo',
+            url: 'https://instagram.com/maetomodayo'
+        },
+        isCurrentlyTrending: true,
+        metrics: {
+            pieces: '2000+',
+            followers: '100K+',
+            years: '15+'
+        },
+        tags: ['FASHION TECH', 'CDG COLLECTOR', 'DIGITAL WARDROBE', 'FASHION ARCHIVE', 'VIRTUAL CURATION'],
+        trending: [
+            { title: 'CDG Digital Archive', location: 'Online', url: 'https://instagram.com/maetomodayo' },
+            { title: 'Virtual Fashion Week', location: 'Digital Platforms', url: 'https://fashionweek.com' },
+            { title: 'Fashion Documentation', location: 'Social Media', url: 'https://instagram.com/maetomodayo' }
+        ]
+    },
+    {
+        id: 'yutaka-fujiwara',
+        name: 'YUTAKA FUJIWARA',
+        subtitle: 'BERBERJIN',
+        year: 'VINTAGE DENIM EXPERT',
+        description: 'Yutaka Fujiwara (@yuttan1977) is the master of vintage denim culture, running BerBerJin and educating enthusiasts about authentic vintage pieces. His expertise shapes global denim collecting trends.',
+        background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%)',
+        backgroundImage: 'https://liveinrugged.com/wp/wp-content/uploads/2023/10/saintmichael_yutakafujiwara_202310_01.jpg',
+        artistPhoto: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face',
+        social: {
+            handle: '@yuttan1977',
+            url: 'https://twitter.com/yuttan1977'
+        },
+        isCurrentlyTrending: false,
+        metrics: {
+            years: '25+',
+            pieces: '5000+',
+            stores: '3'
+        },
+        tags: ['VINTAGE DENIM', 'FASHION EXPERTISE', 'CULTURAL CURATOR', 'AUTHENTIC VINTAGE', 'DENIM HISTORY'],
+        trending: [
+            { title: 'BerBerJin Collection', location: 'Tokyo Stores', url: 'https://berberjin.com' },
+            { title: 'Vintage Denim Guide', location: 'Publications', url: 'https://berberjin.com/guide' },
+            { title: 'Denim Culture Education', location: 'Workshops', url: 'https://berberjin.com/workshop' }
+        ]
+    },
+    {
+        id: 'emi-kusano',
+        name: 'EMI KUSANO',
+        subtitle: 'AI + MEMORY ARTIST',
+        year: 'RETRO-FUTURIST',
+        description: 'Emi Kusano explores the intersection of AI and human memory, creating retro-futuristic art that questions the relationship between technology, nostalgia, and collective memory in digital age.',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+        backgroundImage: 'https://static.wixstatic.com/media/2c6d74_67cec32de2fb4ecc95f8eda1089a5c8a~mv2.jpeg/v1/fill/w_1958,h_1092,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/AN00.jpeg',
+        artistPhoto: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+        social: {
+            handle: '@emi_kusano',
+            url: 'https://twitter.com/emi_kusano'
+        },
+        isCurrentlyTrending: true,
+        metrics: {
+            artworks: '80+',
+            exhibitions: '40+',
+            ai_models: '15+'
+        },
+        tags: ['AI ART', 'MEMORY STUDIES', 'RETRO-FUTURISM', 'DIGITAL NOSTALGIA', 'TECH PHILOSOPHY'],
+        trending: [
+            { title: 'Memory Palace AI', location: 'Digital Galleries', url: 'https://example.com/memory-palace' },
+            { title: 'Retro-Future Dreams', location: 'Tokyo Exhibition', url: 'https://example.com/retro-future' },
+            { title: 'AI Memory Project', location: 'Research Collaboration', url: 'https://example.com/ai-memory' }
+        ]
+    },
+    {
+        id: 'wednesday-campanella',
+        name: 'utaha',
+        subtitle: 'WEDNESDAY CAMPANELLA',
+        year: 'MUSIC + VISUALS',
+        description: 'Wednesday Campanella creates boundary-pushing electronic music paired with surreal visual performances. Their work redefines J-pop through experimental soundscapes and otherworldly aesthetics.',
+        background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
+        backgroundImage: 'https://www.billboard.com/wp-content/uploads/2021/10/Wednesday-Campanella%E2%80%99-courtesy-of-bb-japan-billboard-1548-1635458426.jpg?w=942&h=628&crop=1',
+        artistPhoto: 'https://images.unsplash.com/photo-1494790108755-2616c40c2c2f?w=150&h=150&fit=crop&crop=face',
+        social: {
+            handle: '@wed_camp',
+            url: 'https://twitter.com/wed_camp'
+        },
+        isCurrentlyTrending: true,
+        metrics: {
+            albums: '10+',
+            videos: '50+',
+            tours: '20+'
+        },
+        tags: ['AVANT-GARDE MUSIC', 'ELECTRONIC POP', 'VISUAL PERFORMANCE', 'SURREAL AESTHETICS', 'EXPERIMENTAL SOUND'],
+        trending: [
+            { title: 'SUPERMAN Tour 2024', location: 'Asia Pacific', url: 'https://www.wednesdaycampanella.com' },
+            { title: 'Visual Album Project', location: 'Digital Release', url: 'https://www.youtube.com/c/wednesdaycampanella' },
+            { title: 'Collaborative Performances', location: 'Art Festivals', url: 'https://www.wednesdaycampanella.com/live' }
         ]
     }
 ];
@@ -87,47 +219,32 @@ class DashboardController {
 
     init() {
         this.createProfileNavigation();
-        this.updateProfile(0, false);
         this.setupEventListeners();
+        this.updateProfile(0, false);
         this.startAutoRotation();
     }
 
     createProfileNavigation() {
-        const navContainer = document.createElement('div');
-        navContainer.className = 'profile-navigation';
-        navContainer.innerHTML = `
-            <div class="profile-nav-items">
+        const artistNavigation = document.querySelector('.artist-navigation');
+        artistNavigation.innerHTML = `
+            <div class="artist-list">
                 ${artistProfiles.map((profile, index) => `
-                    <button class="profile-nav-item ${index === 0 ? 'active' : ''}" 
+                    <button class="artist-card ${index === 0 ? 'active' : ''}" 
                             data-index="${index}">
-                        <span class="profile-nav-name">${profile.name}</span>
-                        <span class="profile-nav-subtitle">${profile.subtitle}</span>
+                        <div class="artist-name">${profile.name}</div>
+                        <div class="artist-domain">${profile.tags[0]}</div>
+                        ${profile.isCurrentlyTrending ? '<div class="mini-trending">●</div>' : ''}
                     </button>
                 `).join('')}
             </div>
-            <div class="profile-controls">
-                <button class="profile-control prev" id="prevProfile">
-                    <span>←</span>
-                </button>
-                <button class="profile-control next" id="nextProfile">
-                    <span>→</span>
-                </button>
-            </div>
         `;
-
-        const mainContent = document.querySelector('.main-content');
-        mainContent.appendChild(navContainer);
     }
 
     setupEventListeners() {
-        // Profile navigation buttons
-        document.querySelectorAll('.profile-nav-item').forEach((btn, index) => {
+        // Artist navigation buttons
+        document.querySelectorAll('.artist-card').forEach((btn, index) => {
             btn.addEventListener('click', () => this.switchToProfile(index));
         });
-
-        // Control buttons
-        document.getElementById('prevProfile').addEventListener('click', () => this.previousProfile());
-        document.getElementById('nextProfile').addEventListener('click', () => this.nextProfile());
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
@@ -187,29 +304,34 @@ class DashboardController {
         const backgroundLayer = document.querySelector('.background-layer');
         backgroundLayer.style.background = profile.background;
 
-        // Update title
+        // Update title with trending indicator
         const titleElement = document.querySelector('.main-title');
+        const trendingIndicator = profile.isCurrentlyTrending ? 
+            '<span class="trending-badge">TRENDING</span>' : '';
         titleElement.innerHTML = `
-            ${profile.name}<br>
+            ${profile.name}${trendingIndicator}<br>
             <span class="title-highlight">${profile.subtitle}</span>
         `;
 
-        // Update subtitle
+        // Update subtitle with year and social handle
         const subtitleElement = document.querySelector('.title-subtitle');
-        subtitleElement.textContent = profile.year;
+        subtitleElement.innerHTML = `
+            ${profile.year}
+            <a href="${profile.social.url}" target="_blank" rel="noopener noreferrer" class="social-handle">${profile.social.handle}</a>
+        `;
 
         // Update description
         const descriptionElement = document.querySelector('.description-text');
         descriptionElement.textContent = profile.description;
 
-        // Update metrics
+        // Update metrics (now dynamic based on profile data)
         const metricItems = document.querySelectorAll('.metric-item');
-        const metricKeys = ['projects', 'venues', 'visitors'];
+        const metricKeys = Object.keys(profile.metrics);
         metricItems.forEach((item, index) => {
             const valueElement = item.querySelector('.metric-value');
             const labelElement = item.querySelector('.metric-label');
-            const key = metricKeys[index];
-            if (profile.metrics[key]) {
+            if (metricKeys[index]) {
+                const key = metricKeys[index];
                 valueElement.textContent = profile.metrics[key];
                 labelElement.textContent = key.toUpperCase();
             }
@@ -217,32 +339,53 @@ class DashboardController {
 
         // Update tags
         const tagsContainer = document.querySelector('.tags-container');
-        tagsContainer.innerHTML = profile.tags.map(tag => 
-            `<span class="tag">${tag}</span>`
-        ).join('');
+        if (tagsContainer) {
+            tagsContainer.innerHTML = profile.tags.map(tag => 
+                `<span class="tag">${tag}</span>`
+            ).join('');
+        }
 
         // Update trending items
         const trendingItems = document.querySelector('.trending-items');
         trendingItems.innerHTML = profile.trending.map(item => `
-            <div class="trending-item">
+            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="trending-item">
                 <div class="trending-title">${item.title}</div>
                 <div class="trending-location">${item.location}</div>
-            </div>
+            </a>
         `).join('');
+        
+        // Update background image
+        if (profile.backgroundImage) {
+            const backgroundLayer = document.querySelector('.background-layer');
+            backgroundLayer.style.backgroundImage = `url(${profile.backgroundImage})`;
+            backgroundLayer.style.backgroundSize = 'cover';
+            backgroundLayer.style.backgroundPosition = 'center';
+            backgroundLayer.style.backgroundBlendMode = 'overlay';
+        }
+        
+        // Update profile photo (only if element exists)
+        if (profile.artistPhoto) {
+            const photoPlaceholder = document.querySelector('.photo-placeholder');
+            if (photoPlaceholder) {
+                photoPlaceholder.innerHTML = `<img src="${profile.artistPhoto}" alt="${profile.name}" class="artist-photo">`;
+            }
+        }
     }
 
     fadeOutElements() {
         const elements = [
             '.title-section',
             '.description-section',
-            '.characteristics',
+            '.tags-section',
             '.side-panel'
         ];
 
         elements.forEach(selector => {
             const element = document.querySelector(selector);
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(20px)';
+            if (element) {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+            }
         });
     }
 
@@ -250,21 +393,23 @@ class DashboardController {
         const elements = [
             '.title-section',
             '.description-section',
-            '.characteristics',
+            '.tags-section',
             '.side-panel'
         ];
 
         elements.forEach((selector, index) => {
             const element = document.querySelector(selector);
-            setTimeout(() => {
-                element.style.opacity = '1';
-                element.style.transform = 'translateY(0)';
-            }, index * 100);
+            if (element) {
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 100);
+            }
         });
     }
 
     updateNavigation(index) {
-        document.querySelectorAll('.profile-nav-item').forEach((btn, i) => {
+        document.querySelectorAll('.artist-card').forEach((btn, i) => {
             btn.classList.toggle('active', i === index);
         });
     }

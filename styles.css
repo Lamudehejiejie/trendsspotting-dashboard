@@ -11,14 +11,20 @@ body {
     color: #fff;
     overflow: hidden;
     height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
 .dashboard {
     position: relative;
     width: 100vw;
     height: 100vh;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: 
+        "main right-column"
+        "footer footer";
 }
 
 /* Background Layer */
@@ -36,6 +42,7 @@ body {
         #000000 100%
     );
     z-index: -2;
+    transition: all 0.8s ease;
 }
 
 .gradient-overlay {
@@ -132,10 +139,11 @@ body {
 
 /* Main Content */
 .main-content {
-    flex: 1;
+    grid-area: main;
     display: flex;
-    padding: 60px 40px 40px;
+    padding: 40px;
     position: relative;
+    overflow: hidden;
 }
 
 .content-area {
@@ -144,7 +152,77 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 60px;
+    gap: 40px;
+}
+
+/* Profile Card */
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    opacity: 1;
+}
+
+.profile-photo {
+    flex-shrink: 0;
+}
+
+.photo-placeholder {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.photo-placeholder:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.photo-icon {
+    font-size: 24px;
+    opacity: 0.6;
+}
+
+.artist-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.profile-category {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.profile-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 1px;
 }
 
 /* Title Section */
@@ -174,6 +252,33 @@ body {
     background-clip: text;
 }
 
+.trending-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff6b35 0%, #ff3333 100%);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-left: 20px;
+    letter-spacing: 1px;
+    animation: pulse-glow 2s infinite;
+    position: relative;
+    top: -10px;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        box-shadow: 0 0 10px rgba(255, 51, 51, 0.5);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(255, 51, 51, 0.8);
+        transform: scale(1.05);
+    }
+}
+
 .title-subtitle {
     font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
@@ -181,6 +286,25 @@ body {
     color: rgba(255, 255, 255, 0.6);
     letter-spacing: 3px;
     text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.social-handle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 400;
+    color: #ffffff;
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    opacity: 0.8;
+}
+
+.social-handle:hover {
+    opacity: 1;
+    color: #ffffff;
 }
 
 /* Description Section */
@@ -226,13 +350,20 @@ body {
     text-transform: uppercase;
 }
 
+/* Right Column */
+.right-column {
+    grid-area: right-column;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 40px 40px 40px 0;
+    width: 300px;
+    justify-content: flex-end;
+    padding-bottom: 120px;
+}
+
 /* Side Panel */
 .side-panel {
-    position: absolute;
-    right: 40px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 300px;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -258,12 +389,23 @@ body {
 }
 
 .trending-item {
+    display: block;
     padding: 12px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
 }
 
 .trending-item:last-child {
     border-bottom: none;
+}
+
+.trending-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    transform: translateX(4px);
+    padding-left: 8px;
 }
 
 .trending-title {
@@ -278,22 +420,103 @@ body {
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* Bottom Characteristics */
-.characteristics {
-    position: relative;
-    padding: 30px 40px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    background: rgba(0, 0, 0, 0.3);
+/* Tags Section (in right column) */
+.tags-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
     transition: all 0.3s ease;
     opacity: 1;
+}
+
+/* Artist Navigation Footer */
+.artist-navigation {
+    grid-area: footer;
+    padding: 20px 40px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.artist-list {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.artist-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 120px;
+}
+
+.artist-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.artist-card.active {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+}
+
+.artist-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 1px;
+}
+
+.artist-domain {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.mini-trending {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    background: #ff3333;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: #fff;
+    animation: pulse-mini 2s infinite;
+}
+
+@keyframes pulse-mini {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
 }
 
 .tags-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
+    gap: 8px;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .tag {
@@ -316,90 +539,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Profile Navigation */
-.profile-navigation {
-    position: absolute;
-    bottom: 40px;
-    left: 40px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    z-index: 200;
-}
-
-.profile-nav-items {
-    display: flex;
-    gap: 8px;
-}
-
-.profile-nav-item {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    padding: 12px 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    min-width: 120px;
-}
-
-.profile-nav-item:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-}
-
-.profile-nav-item.active {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
-}
-
-.profile-nav-name {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: 1px;
-    margin-bottom: 2px;
-}
-
-.profile-nav-subtitle {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    color: rgba(255, 255, 255, 0.6);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.profile-controls {
-    display: flex;
-    gap: 8px;
-}
-
-.profile-control {
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 18px;
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.profile-control:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: #fff;
-    transform: scale(1.1);
-}
 
 /* Glitch Animation */
 @keyframes glitch {
@@ -440,7 +579,14 @@ body {
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-    .side-panel {
+    .dashboard {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "main"
+            "footer";
+    }
+    
+    .right-column {
         display: none;
     }
     
@@ -475,29 +621,58 @@ body {
         display: none;
     }
     
-    .profile-navigation {
-        bottom: 20px;
-        left: 20px;
-        right: 20px;
-        justify-content: center;
+    .profile-card {
+        padding: 16px;
+        margin-bottom: 20px;
     }
     
-    .profile-nav-items {
-        flex-wrap: wrap;
-        justify-content: center;
+    .photo-placeholder {
+        width: 60px;
+        height: 60px;
     }
     
-    .profile-nav-item {
+    .photo-icon {
+        font-size: 20px;
+    }
+    
+    .title-subtitle {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .social-handle {
+        font-size: 11px;
+    }
+    
+    .trending-badge {
+        margin-left: 0;
+        margin-top: 8px;
+        top: 0;
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+    
+    
+    .artist-navigation {
+        padding: 15px 20px;
+    }
+    
+    .artist-list {
+        gap: 8px;
+    }
+    
+    .artist-card {
         min-width: 100px;
-        padding: 8px 12px;
+        padding: 12px 16px;
     }
     
-    .profile-nav-name {
+    .artist-name {
         font-size: 10px;
     }
     
-    .profile-nav-subtitle {
-        font-size: 8px;
+    .artist-domain {
+        font-size: 7px;
     }
 }
 
