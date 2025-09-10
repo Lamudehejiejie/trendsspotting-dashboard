@@ -11,16 +11,66 @@ const RSS_FEEDS = [
         url: 'https://www.dezeen.com/feed/',
         category: 'design',
         proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'The Verge',
+        url: 'https://www.theverge.com/rss/index.xml',
+        category: 'tech',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Wired',
+        url: 'https://www.wired.com/feed/rss',
+        category: 'tech',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Fast Company Design',
+        url: 'https://www.fastcompany.com/section/design/rss',
+        category: 'design',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Creative Bloq',
+        url: 'https://www.creativebloq.com/feed',
+        category: 'design',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Highsnobiety',
+        url: 'https://www.highsnobiety.com/feed/',
+        category: 'fashion',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Complex Style',
+        url: 'https://www.complex.com/style/rss',
+        category: 'fashion',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Pitchfork',
+        url: 'https://pitchfork.com/rss/news/',
+        category: 'music',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'The Fader',
+        url: 'https://www.thefader.com/rss',
+        category: 'music',
+        proxy: 'https://api.allorigins.win/get?url='
     }
 ];
 
 // Subculture Keywords for Content Filtering
 const subcultureKeywords = {
-    fashion: ['fashion', 'style', 'designer', 'streetwear', 'runway', 'luxury', 'clothing', 'brand', 'collection'],
-    tech: ['AI', 'VR', 'AR', 'startup', 'innovation', 'digital', 'blockchain', 'crypto', 'app', 'software'],
-    art: ['exhibition', 'gallery', 'artist', 'installation', 'creative', 'museum', 'contemporary', 'sculpture'],
-    music: ['concert', 'festival', 'musician', 'electronic', 'underground', 'album', 'tour', 'sound'],
-    culture: ['subculture', 'youth', 'community', 'trend', 'movement', 'lifestyle', 'underground', 'emerging']
+    fashion: ['fashion', 'style', 'designer', 'streetwear', 'runway', 'luxury', 'clothing', 'brand', 'collection', 'sneakers', 'hypebeast', 'drop', 'collab'],
+    tech: ['AI', 'VR', 'AR', 'startup', 'innovation', 'digital', 'blockchain', 'crypto', 'app', 'software', 'machine learning', 'neural', 'algorithm', 'data'],
+    art: ['exhibition', 'gallery', 'artist', 'installation', 'creative', 'museum', 'contemporary', 'sculpture', 'digital art', 'NFT', 'generative'],
+    music: ['concert', 'festival', 'musician', 'electronic', 'underground', 'album', 'tour', 'sound', 'producer', 'DJ', 'remix', 'beat'],
+    culture: ['subculture', 'youth', 'community', 'trend', 'movement', 'lifestyle', 'underground', 'emerging', 'viral', 'influencer', 'creator'],
+    design: ['design', 'interface', 'UX', 'UI', 'creative', 'visual', 'typography', 'branding', 'aesthetic', 'minimalist'],
+    gaming: ['gaming', 'esports', 'streamer', 'twitch', 'discord', 'console', 'indie game', 'mobile game']
 };
 
 // RSS Feed Parser Class
@@ -460,7 +510,13 @@ class DashboardController {
             console.log('Loading real-time profiles...');
             const articles = await this.dynamicProfileGenerator.rssParser.getAllRelevantArticles();
             
+            console.log('Found articles:', articles.length);
             if (articles.length > 0) {
+                console.log('Sample articles with dates:');
+                articles.slice(0, 3).forEach(article => {
+                    console.log(`- ${article.title} (${article.pubDate.toISOString()}) from ${article.source}`);
+                });
+                
                 const realTimeProfile = await this.dynamicProfileGenerator.generateProfileFromArticles(articles);
                 
                 if (realTimeProfile) {
@@ -474,7 +530,14 @@ class DashboardController {
                     this.createProfileNavigation();
                     
                     console.log(`Added real-time profile: ${realTimeProfile.name}`);
-                    console.log(`Based on ${articles.length} articles`);
+                    console.log(`Based on ${articles.length} articles from ${new Set(articles.map(a => a.source)).size} sources`);
+                }
+            } else {
+                console.log('No relevant articles found. Checking feeds...');
+                // Debug: check individual feeds
+                for (const feedConfig of RSS_FEEDS) {
+                    const feedArticles = await this.dynamicProfileGenerator.rssParser.fetchFeed(feedConfig);
+                    console.log(`${feedConfig.name}: ${feedArticles.length} relevant articles`);
                 }
             }
         } catch (error) {
