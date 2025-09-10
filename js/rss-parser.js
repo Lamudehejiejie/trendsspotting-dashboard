@@ -124,6 +124,9 @@ class RSSFeedParser {
             const pubDate = item.querySelector('pubDate')?.textContent || '';
             const category = item.querySelector('category')?.textContent || feedConfig.category;
 
+            // Extract image from various RSS fields
+            const imageUrl = this.extractImageFromRSS(item, description);
+
             // Filter for subculture relevance
             if (this.isSubcultureRelevant(title, description)) {
                 articles.push({
@@ -133,12 +136,66 @@ class RSSFeedParser {
                     pubDate: new Date(pubDate),
                     category,
                     source: feedConfig.name,
+                    imageUrl: imageUrl,
                     relevanceScore: this.calculateRelevanceScore(title, description)
                 });
             }
         });
 
         return articles.sort((a, b) => b.relevanceScore - a.relevanceScore);
+    }
+
+    extractImageFromRSS(item, description) {
+        // Try different RSS image fields in order of preference
+        let imageUrl = null;
+
+        // Method 1: media:thumbnail or media:content
+        const mediaThumbnail = item.querySelector('media\\:thumbnail, thumbnail');
+        if (mediaThumbnail) {
+            imageUrl = mediaThumbnail.getAttribute('url');
+        }
+
+        const mediaContent = item.querySelector('media\\:content, content');
+        if (!imageUrl && mediaContent && mediaContent.getAttribute('type')?.startsWith('image')) {
+            imageUrl = mediaContent.getAttribute('url');
+        }
+
+        // Method 2: enclosure with image type
+        const enclosure = item.querySelector('enclosure');
+        if (!imageUrl && enclosure && enclosure.getAttribute('type')?.startsWith('image')) {
+            imageUrl = enclosure.getAttribute('url');
+        }
+
+        // Method 3: Extract from description HTML
+        if (!imageUrl && description) {
+            const imgMatch = description.match(/<img[^>]+src=["']([^"']+)["']/i);
+            if (imgMatch) {
+                imageUrl = imgMatch[1];
+            }
+        }
+
+        // Method 4: Look for image URLs in description text
+        if (!imageUrl && description) {
+            const urlMatch = description.match(/(https?:\/\/[^\s<>"']+\.(?:jpg|jpeg|png|gif|webp))/i);
+            if (urlMatch) {
+                imageUrl = urlMatch[1];
+            }
+        }
+
+        // Clean up the URL if found
+        if (imageUrl) {
+            // Remove any HTML entities
+            imageUrl = imageUrl.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+            // Ensure it's a valid URL
+            try {
+                new URL(imageUrl);
+                return imageUrl;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        return null;
     }
 
     isSubcultureRelevant(title, description) {

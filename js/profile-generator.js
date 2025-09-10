@@ -24,6 +24,10 @@ class DynamicProfileGenerator {
         const categoryArticles = categories[mainCategory];
         const latestArticle = categoryArticles[0];
 
+        // Get the best image from articles (prefer articles with images)
+        const articleWithImage = categoryArticles.find(article => article.imageUrl);
+        const backgroundImageUrl = articleWithImage ? articleWithImage.imageUrl : this.getFallbackImage(mainCategory);
+
         return {
             id: `trending-${mainCategory}-${Date.now()}`,
             name: `TRENDING ${mainCategory.toUpperCase()}`,
@@ -31,7 +35,7 @@ class DynamicProfileGenerator {
             year: 'LIVE FEED',
             description: `Latest developments in ${mainCategory}: ${latestArticle.title}. ${latestArticle.description.substring(0, 200)}...`,
             background: this.getCategoryBackground(mainCategory),
-            backgroundImage: '', // Could add image extraction later
+            backgroundImage: backgroundImageUrl,
             artistPhoto: '',
             social: {
                 handle: '@trendspotting',
@@ -47,7 +51,8 @@ class DynamicProfileGenerator {
             trending: categoryArticles.slice(0, 3).map(article => ({
                 title: article.title.substring(0, 50) + '...',
                 location: article.source,
-                url: article.link
+                url: article.link,
+                imageUrl: article.imageUrl // Include image URL for trending items
             })),
             isRealTime: true,
             lastUpdated: new Date()
@@ -64,6 +69,19 @@ class DynamicProfileGenerator {
             default: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 50%, #ff6b35 100%)'
         };
         return backgrounds[category] || backgrounds.default;
+    }
+
+    getFallbackImage(category) {
+        // Unsplash images related to each category as fallbacks
+        const fallbackImages = {
+            tech: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1200&h=800&fit=crop',
+            design: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=800&fit=crop',
+            fashion: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200&h=800&fit=crop',
+            art: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1200&h=800&fit=crop',
+            music: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&h=800&fit=crop',
+            default: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&h=800&fit=crop'
+        };
+        return fallbackImages[category] || fallbackImages.default;
     }
 
     generateTags(articles) {

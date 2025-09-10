@@ -43,50 +43,51 @@ class CarouselManager {
             smoothScrollTo(this.currentScroll + cardWidth * 3);
         });
         
-        // Mouse drag functionality
+        // Mouse drag functionality with global events
         container.addEventListener('mousedown', (e) => {
             this.isDragging = true;
-            this.startX = e.pageX - container.offsetLeft;
+            this.startX = e.pageX;
             this.scrollLeft = this.currentScroll;
             container.style.cursor = 'grabbing';
-            container.style.userSelect = 'none';
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
         });
         
-        container.addEventListener('mouseleave', () => {
-            this.isDragging = false;
-            container.style.cursor = 'grab';
-            container.style.userSelect = 'auto';
-        });
-        
-        container.addEventListener('mouseup', () => {
-            this.isDragging = false;
-            container.style.cursor = 'grab';
-            container.style.userSelect = 'auto';
-        });
-        
-        container.addEventListener('mousemove', (e) => {
+        // Global mouse events to handle dragging outside container
+        document.addEventListener('mousemove', (e) => {
             if (!this.isDragging) return;
             e.preventDefault();
-            const x = e.pageX - container.offsetLeft;
-            const walk = (x - this.startX) * 2;
-            smoothScrollTo(this.scrollLeft - walk);
+            const x = e.pageX;
+            const walk = (this.startX - x) * 1.5; // Increased sensitivity
+            smoothScrollTo(this.scrollLeft + walk);
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (this.isDragging) {
+                this.isDragging = false;
+                container.style.cursor = 'grab';
+                document.body.style.userSelect = 'auto';
+                updateButtons();
+            }
         });
         
         // Touch drag functionality
         container.addEventListener('touchstart', (e) => {
             this.startX = e.touches[0].pageX;
             this.scrollLeft = this.currentScroll;
+            this.isDragging = true;
         }, { passive: true });
         
         container.addEventListener('touchmove', (e) => {
-            if (!this.startX) return;
+            if (!this.isDragging || !this.startX) return;
             const x = e.touches[0].pageX;
-            const walk = (this.startX - x) * 1.5;
+            const walk = (this.startX - x) * 2; // Increased touch sensitivity
             smoothScrollTo(this.scrollLeft + walk);
         }, { passive: true });
         
         container.addEventListener('touchend', () => {
             this.startX = 0;
+            this.isDragging = false;
             updateButtons();
         }, { passive: true });
         

@@ -7,7 +7,6 @@ const artistProfiles = [
         description: 'Ei Wada creates orchestra performances using vintage electronics as instruments, transforming discarded technology into symphonic experiences. His barcode scanner concerts turn everyday objects into musical interfaces.',
         background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffd23f 100%)',
         backgroundImage: 'https://images.squarespace-cdn.com/content/v1/56f4abb9e707eb33bf4e9fef/7f5a29b9-45fe-493c-b0c6-e8e8e78f4095/TRIO-bure_fix.jpg?format=2500w',
-        artistPhoto: '',
         social: {
             handle: '@crabfeet',
             url: 'https://x.com/crab_feet'
@@ -33,7 +32,6 @@ const artistProfiles = [
         description: 'Yoichi Ochiai bridges physical and digital realms through his WoW orchestra, where audience members become performers through real-time collaboration technology and interactive media art.',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
         backgroundImage: 'https://www.w0w.co.jp/filestore/0000000/0006615.jpg',
-        artistPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@ochyai',
             url: 'https://twitter.com/ochyai'
@@ -59,7 +57,6 @@ const artistProfiles = [
         description: 'Daito Manabe pushes the boundaries of human-computer interaction through facial muscle control, projection mapping, and data visualization. His work transforms the human body into a digital canvas.',
         background: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 50%, #ff6b35 100%)',
         backgroundImage: 'https://neocha-content.oss-cn-hongkong.aliyuncs.com/wp-content/uploads/sites/2/2020/09/daito-manabe-01.gif',
-        artistPhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@daito',
             url: 'https://twitter.com/daito'
@@ -85,7 +82,6 @@ const artistProfiles = [
         description: 'Nobumichi Tosa creates wonderfully absurd electronic instruments and art objects. His Otamatone became a global phenomenon, bringing playful interaction to electronic music creation.',
         background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #093637 100%)',
         backgroundImage: 'https://prcdn.freetls.fastly.net/release_image/43036/10/43036-10-54a6d0d1956dba242a5dfa15ff1dcc09-2784x1856.jpg?format=jpeg&auto=webp&quality=85%2C65&width=1950&height=1350&fit=bounds',
-        artistPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@maywadenki',
             url: 'https://twitter.com/maywadenki'
@@ -111,7 +107,6 @@ const artistProfiles = [
         description: 'Mae (@maetomodayo) has built one of the most comprehensive Comme des Garçons collections, documenting fashion history through digital curation and creating virtual wardrobes that bridge physical and digital fashion.',
         background: 'linear-gradient(135deg, #000000 0%, #434343 50%, #000000 100%)',
         backgroundImage: 'https://fashionsnap-assets.com/asset/format=auto,width=1088/streetstyle/images/2025/09/08-29-25-52-03-7-b3b3696a-dc79-4b90-ab22-3b622ea492e5.jpg',
-        artistPhoto: 'https://images.unsplash.com/photo-1494790108755-2616c40c2c2f?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@maetomodayo',
             url: 'https://instagram.com/maetomodayo'
@@ -137,7 +132,6 @@ const artistProfiles = [
         description: 'Yutaka Fujiwara (@yuttan1977) is the master of vintage denim culture, running BerBerJin and educating enthusiasts about authentic vintage pieces. His expertise shapes global denim collecting trends.',
         background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%)',
         backgroundImage: 'https://liveinrugged.com/wp/wp-content/uploads/2023/10/saintmichael_yutakafujiwara_202310_01.jpg',
-        artistPhoto: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@yuttan1977',
             url: 'https://twitter.com/yuttan1977'
@@ -163,7 +157,6 @@ const artistProfiles = [
         description: 'Emi Kusano explores the intersection of AI and human memory, creating retro-futuristic art that questions the relationship between technology, nostalgia, and collective memory in digital age.',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
         backgroundImage: 'https://static.wixstatic.com/media/2c6d74_67cec32de2fb4ecc95f8eda1089a5c8a~mv2.jpeg/v1/fill/w_1958,h_1092,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/AN00.jpeg',
-        artistPhoto: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@emi_kusano',
             url: 'https://twitter.com/emi_kusano'
@@ -189,7 +182,6 @@ const artistProfiles = [
         description: 'Wednesday Campanella creates boundary-pushing electronic music paired with surreal visual performances. Their work redefines J-pop through experimental soundscapes and otherworldly aesthetics.',
         background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
         backgroundImage: 'https://www.billboard.com/wp-content/uploads/2021/10/Wednesday-Campanella%E2%80%99-courtesy-of-bb-japan-billboard-1548-1635458426.jpg?w=942&h=628&crop=1',
-        artistPhoto: 'https://images.unsplash.com/photo-1494790108755-2616c40c2c2f?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@wed_camp',
             url: 'https://twitter.com/wed_camp'
@@ -215,7 +207,6 @@ const artistProfiles = [
         description: 'Takeshi Murata creates hypnotic digital sculptures and glitch videos that transform familiar imagery into otherworldly experiences. His work bridges traditional Japanese aesthetics with cutting-edge digital manipulation.',
         background: 'linear-gradient(135deg, #1F2937 0%, #DC2626 50%, #F59E0B 100%)',
         backgroundImage: 'https://www.takeshimurata.com/work/',
-        artistPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@takeshimurata',
             url: 'https://twitter.com/takeshimurata'
@@ -241,7 +232,6 @@ const artistProfiles = [
         description: 'Ryoji Ikeda transforms pure data into immersive audiovisual experiences. His minimal electronic compositions and data visualizations create transcendent experiences from mathematical precision.',
         background: 'linear-gradient(135deg, #000000 0%, #1F2937 50%, #374151 100%)',
         backgroundImage: 'https://www.ryojiikeda.com/project/superposition/',
-        artistPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@ryojiikeda',
             url: 'https://twitter.com/ryojiikeda'
@@ -267,7 +257,6 @@ const artistProfiles = [
         description: 'Sputniko! (Hiromi Ozaki) creates provocative projects that examine technology through a feminist lens. Her speculative designs challenge gender roles in tech and imagine alternative technological futures.',
         background: 'linear-gradient(135deg, #EC4899 0%, #F472B6 50%, #FBBF24 100%)',
         backgroundImage: 'https://sputniko.com/projects/',
-        artistPhoto: 'https://images.unsplash.com/photo-1494790108755-2616c40c2c2f?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@5putn1k0',
             url: 'https://twitter.com/5putn1k0'
@@ -293,7 +282,6 @@ const artistProfiles = [
         description: 'So Kanno creates robotic performances where machines become musical performers. His works explore the relationship between humans and machines through orchestrated mechanical performances.',
         background: 'linear-gradient(135deg, #374151 0%, #6B7280 50%, #9CA3AF 100%)',
         backgroundImage: 'https://www.so-kanno.com/works/',
-        artistPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@so_kanno',
             url: 'https://twitter.com/so_kanno'
@@ -319,7 +307,6 @@ const artistProfiles = [
         description: 'Yuri Suzuki designs innovative audio experiences and sound installations. His work spans from colorful modular synthesizers to architectural sound projects that make music creation accessible and playful.',
         background: 'linear-gradient(135deg, #F59E0B 0%, #EF4444 50%, #EC4899 100%)',
         backgroundImage: 'https://yurisuzuki.com/projects/',
-        artistPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@yuri_suzuki_',
             url: 'https://twitter.com/yuri_suzuki_'
@@ -345,7 +332,6 @@ const artistProfiles = [
         description: 'ExoNemo (Kensuke Sembo & Yae Akaiwa) are pioneers of Japanese net art, creating works that explore digital culture, online behavior, and the archaeology of internet history.',
         background: 'linear-gradient(135deg, #0F172A 0%, #1E40AF 50%, #7C3AED 100%)',
         backgroundImage: 'https://exonemo.com/works/',
-        artistPhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@exonemo',
             url: 'https://twitter.com/exonemo'
@@ -371,7 +357,6 @@ const artistProfiles = [
         description: 'Masahiko Sato creates digital toys and interactive installations that blur the line between play and art. His work brings Japanese kawaii culture into contemporary digital art spaces.',
         background: 'linear-gradient(135deg, #10B981 0%, #3B82F6 50%, #8B5CF6 100%)',
         backgroundImage: 'https://masahikosato.com/btoy/',
-        artistPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@masahiko_sato',
             url: 'https://twitter.com/masahiko_sato'
@@ -397,7 +382,6 @@ const artistProfiles = [
         description: 'Aya Takano evolves the Superflat movement into contemporary digital realms. Her otherworldly characters and landscapes explore themes of technology, nature, and Japanese pop culture futurism.',
         background: 'linear-gradient(135deg, #FBBF24 0%, #F472B6 50%, #8B5CF6 100%)',
         backgroundImage: 'https://www.perrotin.com/artists/Aya_Takano/2',
-        artistPhoto: 'https://images.unsplash.com/photo-1494790108755-2616c40c2c2f?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@aya_takano_art',
             url: 'https://twitter.com/aya_takano_art'
@@ -423,7 +407,6 @@ const artistProfiles = [
         description: 'Akira Wakita designs experimental wearables that respond to emotion, environment, and social interaction. His work explores how clothing can become an interface for digital expression.',
         background: 'linear-gradient(135deg, #1F2937 0%, #7C3AED 50%, #EC4899 100%)',
         backgroundImage: 'https://akirawakita.com/wearable/',
-        artistPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@akira_wakita',
             url: 'https://twitter.com/akira_wakita'
@@ -449,7 +432,6 @@ const artistProfiles = [
         description: 'Kohei Nawa creates sculptures that seem to exist between digital and physical realms. His pixelated and liquid-like forms challenge our perception of matter and space through innovative materials.',
         background: 'linear-gradient(135deg, #065F46 0%, #059669 50%, #10B981 100%)',
         backgroundImage: 'https://kohei-nawa.net/works/',
-        artistPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
         social: {
             handle: '@kohei_nawa',
             url: 'https://twitter.com/kohei_nawa'

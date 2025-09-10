@@ -27,9 +27,13 @@ class DashboardController {
             
             console.log('Found articles:', articles.length);
             if (articles.length > 0) {
-                console.log('Sample articles with dates:');
+                console.log('Sample articles with dates and images:');
                 articles.slice(0, 3).forEach(article => {
-                    console.log(`- ${article.title} (${article.pubDate.toISOString()}) from ${article.source}`);
+                    const imageStatus = article.imageUrl ? '🖼️' : '📝';
+                    console.log(`${imageStatus} ${article.title} (${article.pubDate.toISOString()}) from ${article.source}`);
+                    if (article.imageUrl) {
+                        console.log(`   Image: ${article.imageUrl}`);
+                    }
                 });
                 
                 const realTimeProfile = await this.dynamicProfileGenerator.generateProfileFromArticles(articles);
