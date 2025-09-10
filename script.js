@@ -637,23 +637,169 @@ class DashboardController {
     createProfileNavigation() {
         const artistNavigation = document.querySelector('.artist-navigation');
         artistNavigation.innerHTML = `
-            <div class="artist-list">
-                ${this.allProfiles.map((profile, index) => `
-                    <button class="artist-card ${index === 0 ? 'active' : ''} ${profile.isRealTime ? 'real-time-profile' : ''}" 
-                            data-index="${index}">
-                        <div class="artist-name">${profile.name}</div>
-                        <div class="artist-domain">${profile.tags[0]}</div>
-                        ${profile.isCurrentlyTrending ? '<div class="mini-trending">●</div>' : ''}
-                        ${profile.isRealTime ? '<div class="live-indicator">LIVE</div>' : ''}
-                    </button>
-                `).join('')}
+            <div class="carousel-container">
+                <button class="carousel-nav prev" aria-label="Previous profiles">‹</button>
+                <div class="artist-carousel">
+                    <div class="artist-list">
+                        ${this.allProfiles.map((profile, index) => `
+                            <button class="artist-card ${index === 0 ? 'active' : ''} ${profile.isRealTime ? 'real-time-profile' : ''}" 
+                                    data-index="${index}">
+                                <div class="artist-name">${profile.name}</div>
+                                <div class="artist-domain">${profile.tags[0]}</div>
+                                ${profile.isCurrentlyTrending ? '<div class="mini-trending">●</div>' : ''}
+                                ${profile.isRealTime ? '<div class="live-indicator">LIVE</div>' : ''}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+                <button class="carousel-nav next" aria-label="Next profiles">›</button>
             </div>
         `;
         
-        // Re-attach event listeners
+        // Re-attach event listeners for artist cards
         document.querySelectorAll('.artist-card').forEach((btn, index) => {
             btn.addEventListener('click', () => this.switchToProfile(index));
         });
+        
+        // Add carousel navigation listeners
+        this.setupCarouselNavigation();
+    }
+
+    setupCarouselNavigation() {
+        const carousel = document.querySelector('.artist-list');
+        const prevBtn = document.querySelector('.carousel-nav.prev');
+        const nextBtn = document.querySelector('.carousel-nav.next');
+        const container = carousel.parentElement;
+        const cardWidth = 152; // Width of each card + margin (140px + 12px gap)
+        
+        let currentScroll = 0;
+        let isDragging = false;
+        let startX = 0;
+        let scrollLeft = 0;
+        
+        const getMaxScroll = () => Math.max(0, (this.allProfiles.length * cardWidth) - container.clientWidth);
+        
+        const updateButtons = () => {
+            const maxScroll = getMaxScroll();
+            prevBtn.style.opacity = currentScroll <= 0 ? '0.3' : '1';
+            nextBtn.style.opacity = currentScroll >= maxScroll ? '0.3' : '1';
+            prevBtn.disabled = currentScroll <= 0;
+            nextBtn.disabled = currentScroll >= maxScroll;
+        };
+        
+        const smoothScrollTo = (targetScroll) => {
+            const maxScroll = getMaxScroll();
+            currentScroll = Math.max(0, Math.min(maxScroll, targetScroll));
+            carousel.style.transform = `translateX(-${currentScroll}px)`;
+            updateButtons();
+        };
+        
+        // Arrow button navigation
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            smoothScrollTo(currentScroll - cardWidth * 3);
+        });
+        
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            smoothScrollTo(currentScroll + cardWidth * 3);
+        });
+        
+        // Mouse drag functionality
+        container.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.pageX - container.offsetLeft;
+            scrollLeft = currentScroll;
+            container.style.cursor = 'grabbing';
+            container.style.userSelect = 'none';
+        });
+        
+        container.addEventListener('mouseleave', () => {
+            isDragging = false;
+            container.style.cursor = 'grab';
+            container.style.userSelect = 'auto';
+        });
+        
+        container.addEventListener('mouseup', () => {
+            isDragging = false;
+            container.style.cursor = 'grab';
+            container.style.userSelect = 'auto';
+        });
+        
+        container.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = e.pageX - container.offsetLeft;
+            const walk = (x - startX) * 2;
+            smoothScrollTo(scrollLeft - walk);
+        });
+        
+        // Touch drag functionality
+        container.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].pageX;
+            scrollLeft = currentScroll;
+        }, { passive: true });
+        
+        container.addEventListener('touchmove', (e) => {
+            if (!startX) return;
+            const x = e.touches[0].pageX;
+            const walk = (startX - x) * 1.5;
+            smoothScrollTo(scrollLeft + walk);
+        }, { passive: true });
+        
+        container.addEventListener('touchend', () => {
+            startX = 0;
+            updateButtons();
+        }, { passive: true });
+        
+        // Mouse wheel scrolling
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const scrollAmount = e.deltaY > 0 ? cardWidth : -cardWidth;
+            smoothScrollTo(currentScroll + scrollAmount);
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.target.closest('.artist-card')) return; // Don't interfere with card selection
+            
+            if (e.key === 'ArrowLeft' && e.shiftKey) {
+                e.preventDefault();
+                smoothScrollTo(currentScroll - cardWidth);
+            } else if (e.key === 'ArrowRight' && e.shiftKey) {
+                e.preventDefault();
+                smoothScrollTo(currentScroll + cardWidth);
+            }
+        });
+        
+        // Set initial cursor style
+        container.style.cursor = 'grab';
+        
+        // Initial button state
+        updateButtons();
+        
+        // Update on window resize
+        window.addEventListener('resize', updateButtons);
+        
+        // Auto-scroll to show active card if it's out of view
+        this.scrollToActiveCard();
+    }
+    
+    scrollToActiveCard() {
+        const activeCard = document.querySelector('.artist-card.active');
+        const carousel = document.querySelector('.artist-list');
+        const container = carousel.parentElement;
+        
+        if (activeCard && carousel && container) {
+            const cardRect = activeCard.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            if (cardRect.left < containerRect.left || cardRect.right > containerRect.right) {
+                const cardIndex = parseInt(activeCard.dataset.index);
+                const scrollAmount = cardIndex * 160; // card width
+                carousel.style.transform = `translateX(-${scrollAmount}px)`;
+            }
+        }
     }
 
     setupEventListeners() {
