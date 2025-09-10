@@ -529,19 +529,101 @@ class DashboardController {
                     // Update navigation
                     this.createProfileNavigation();
                     
-                    console.log(`Added real-time profile: ${realTimeProfile.name}`);
+                    console.log(`✅ Added real-time profile: ${realTimeProfile.name}`);
                     console.log(`Based on ${articles.length} articles from ${new Set(articles.map(a => a.source)).size} sources`);
                 }
             } else {
-                console.log('No relevant articles found. Checking feeds...');
+                console.log('❌ No relevant articles found. Creating fallback profile...');
+                
+                // Create a fallback real-time profile even if no articles found
+                const fallbackProfile = {
+                    id: `trending-fallback-${Date.now()}`,
+                    name: 'TRENDING NOW',
+                    subtitle: 'REAL-TIME INSIGHTS',
+                    year: 'LIVE FEED',
+                    description: 'Currently updating with the latest trends from fashion, tech, and culture. New content loading...',
+                    background: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 50%, #ff6b35 100%)',
+                    backgroundImage: '',
+                    artistPhoto: '',
+                    social: {
+                        handle: '@trendspotting',
+                        url: '#'
+                    },
+                    isCurrentlyTrending: true,
+                    metrics: {
+                        status: 'LOADING',
+                        updated: 'LIVE',
+                        sources: 'Multiple'
+                    },
+                    tags: ['TRENDING', 'REAL-TIME', 'LOADING'],
+                    trending: [
+                        { title: 'Content Loading...', location: 'Multiple Sources', url: '#' },
+                        { title: 'Fetching Latest Trends...', location: 'RSS Feeds', url: '#' },
+                        { title: 'Real-time Updates Coming...', location: 'Live Data', url: '#' }
+                    ],
+                    isRealTime: true,
+                    lastUpdated: new Date()
+                };
+                
+                // Remove any existing real-time profiles
+                this.allProfiles = this.allProfiles.filter(p => !p.isRealTime);
+                
+                // Add fallback profile
+                this.allProfiles.unshift(fallbackProfile);
+                
+                // Update navigation
+                this.createProfileNavigation();
+                
+                console.log('📱 Added fallback real-time profile');
+                
                 // Debug: check individual feeds
                 for (const feedConfig of RSS_FEEDS) {
-                    const feedArticles = await this.dynamicProfileGenerator.rssParser.fetchFeed(feedConfig);
-                    console.log(`${feedConfig.name}: ${feedArticles.length} relevant articles`);
+                    try {
+                        const feedArticles = await this.dynamicProfileGenerator.rssParser.fetchFeed(feedConfig);
+                        console.log(`${feedConfig.name}: ${feedArticles.length} relevant articles`);
+                    } catch (feedError) {
+                        console.error(`❌ Error fetching ${feedConfig.name}:`, feedError);
+                    }
                 }
             }
         } catch (error) {
-            console.error('Error loading real-time profiles:', error);
+            console.error('❌ Error loading real-time profiles:', error);
+            
+            // Always ensure there's a live profile, even on error
+            if (!this.allProfiles.some(p => p.isRealTime)) {
+                const errorProfile = {
+                    id: `trending-error-${Date.now()}`,
+                    name: 'TRENDING SYSTEM',
+                    subtitle: 'REAL-TIME INSIGHTS',
+                    year: 'LIVE FEED',
+                    description: 'Real-time content system is initializing. Check console for debug information.',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+                    backgroundImage: '',
+                    artistPhoto: '',
+                    social: {
+                        handle: '@trendspotting',
+                        url: '#'
+                    },
+                    isCurrentlyTrending: true,
+                    metrics: {
+                        status: 'ERROR',
+                        updated: 'LIVE',
+                        sources: 'Debug'
+                    },
+                    tags: ['SYSTEM', 'DEBUG', 'LIVE'],
+                    trending: [
+                        { title: 'System Status: Debugging', location: 'Console', url: '#' },
+                        { title: 'Check Browser Console', location: 'Developer Tools', url: '#' },
+                        { title: 'RSS Feed Diagnostics', location: 'Network Tab', url: '#' }
+                    ],
+                    isRealTime: true,
+                    lastUpdated: new Date()
+                };
+                
+                this.allProfiles = this.allProfiles.filter(p => !p.isRealTime);
+                this.allProfiles.unshift(errorProfile);
+                this.createProfileNavigation();
+            }
         }
     }
 
