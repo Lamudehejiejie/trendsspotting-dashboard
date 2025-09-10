@@ -331,7 +331,7 @@ const artistProfiles = [
         year: 'DIGITAL ARCHAEOLOGY',
         description: 'ExoNemo (Kensuke Sembo & Yae Akaiwa) are pioneers of Japanese net art, creating works that explore digital culture, online behavior, and the archaeology of internet history.',
         background: 'linear-gradient(135deg, #0F172A 0%, #1E40AF 50%, #7C3AED 100%)',
-        backgroundImage: 'https://waitingroom.jp/wp-content/uploads/2022/12/idea2.jpg',
+        backgroundImage: 'https://evm.elektramontreal.ca/uploads/gallery/exonemo/exonemo-evm-3-1200w.png',
         social: {
             handle: '@exonemo',
             url: 'https://twitter.com/exonemo'
