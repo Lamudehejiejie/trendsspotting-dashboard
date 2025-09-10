@@ -186,6 +186,10 @@ class RSSFeedParser {
         if (imageUrl) {
             // Remove any HTML entities
             imageUrl = imageUrl.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+            
+            // Try to enhance image quality for known services
+            imageUrl = this.enhanceImageQuality(imageUrl);
+            
             // Ensure it's a valid URL
             try {
                 new URL(imageUrl);
@@ -196,6 +200,46 @@ class RSSFeedParser {
         }
 
         return null;
+    }
+
+    enhanceImageQuality(imageUrl) {
+        // Enhance image quality for various image services
+        
+        // Unsplash - ensure HD quality
+        if (imageUrl.includes('unsplash.com')) {
+            // Add HD parameters if not present
+            if (!imageUrl.includes('w=') && !imageUrl.includes('&w=')) {
+                const separator = imageUrl.includes('?') ? '&' : '?';
+                imageUrl += `${separator}w=1920&h=1080&fit=crop&q=80`;
+            }
+        }
+        
+        // WordPress/CDN images - try to get larger versions
+        if (imageUrl.includes('wp-content') && imageUrl.includes('-')) {
+            // Replace common small size indicators with larger ones
+            imageUrl = imageUrl.replace(/-\d+x\d+\./g, '-1920x1080.');
+            imageUrl = imageUrl.replace(/-small\./g, '-large.');
+            imageUrl = imageUrl.replace(/-medium\./g, '-large.');
+            imageUrl = imageUrl.replace(/-thumb\./g, '-large.');
+        }
+        
+        // Squarespace images - enhance quality
+        if (imageUrl.includes('squarespace-cdn.com')) {
+            if (!imageUrl.includes('format=')) {
+                const separator = imageUrl.includes('?') ? '&' : '?';
+                imageUrl += `${separator}format=2500w`;
+            }
+        }
+        
+        // Generic CDN parameters for quality
+        if (imageUrl.includes('images.') || imageUrl.includes('cdn.')) {
+            // Add quality parameters if URL structure allows
+            if (imageUrl.includes('?') && !imageUrl.includes('quality=') && !imageUrl.includes('q=')) {
+                imageUrl += '&q=80';
+            }
+        }
+
+        return imageUrl;
     }
 
     isSubcultureRelevant(title, description) {

@@ -10,14 +10,53 @@ class DashboardController {
     }
 
     async init() {
+        // Always create initial trending profile first
+        this.createInitialTrendingProfile();
         this.createProfileNavigation();
         this.setupEventListeners();
         this.updateProfile(0, false);
         this.startAutoRotation();
         
-        // Load real-time content
-        await this.loadRealTimeProfiles();
+        // Load real-time content in background
+        this.loadRealTimeProfiles();
         this.startRealTimeUpdates();
+    }
+
+    createInitialTrendingProfile() {
+        // Always ensure there's a trending profile at position 0
+        const initialTrendingProfile = {
+            id: `trending-initial-${Date.now()}`,
+            name: 'TRENDING NOW',
+            subtitle: 'REAL-TIME INSIGHTS',
+            year: 'LIVE UPDATING',
+            description: 'Loading the latest trends from fashion, tech, and culture. Real-time content updating...',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+            backgroundImage: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1920&h=1080&fit=crop&q=80', // HD quality
+            artistPhoto: '',
+            social: {
+                handle: '@trendspotting',
+                url: '#'
+            },
+            isCurrentlyTrending: true,
+            metrics: {
+                status: 'LOADING',
+                updated: 'LIVE',
+                sources: 'MULTIPLE'
+            },
+            tags: ['TRENDING NOW', 'REAL-TIME UPDATING', 'LIVE FEED'],
+            trending: [
+                { title: 'Fetching Latest Trends...', location: 'RSS Feeds', url: '#' },
+                { title: 'Analyzing Content...', location: 'Multiple Sources', url: '#' },
+                { title: 'Updating Feed...', location: 'Live Data', url: '#' }
+            ],
+            isRealTime: true,
+            isLoading: true,
+            lastUpdated: new Date()
+        };
+
+        // Remove any existing real-time profiles and add the initial one
+        this.allProfiles = this.allProfiles.filter(p => !p.isRealTime);
+        this.allProfiles.unshift(initialTrendingProfile);
     }
 
     async loadRealTimeProfiles() {
@@ -242,6 +281,14 @@ class DashboardController {
         // Update background
         const backgroundLayer = document.querySelector('.background-layer');
         backgroundLayer.style.background = profile.background;
+        
+        // Add loading class if profile is loading
+        const mainContent = document.querySelector('.main-content');
+        if (profile.isLoading) {
+            mainContent.classList.add('trending-loading');
+        } else {
+            mainContent.classList.remove('trending-loading');
+        }
 
         // Update title with trending indicator
         const titleElement = document.querySelector('.main-title');
@@ -273,6 +320,13 @@ class DashboardController {
                 const key = metricKeys[index];
                 valueElement.textContent = profile.metrics[key];
                 labelElement.textContent = key.toUpperCase();
+                
+                // Add loading class for metrics if profile is loading
+                if (profile.isLoading) {
+                    item.classList.add('metric-loading');
+                } else {
+                    item.classList.remove('metric-loading');
+                }
             }
         });
 

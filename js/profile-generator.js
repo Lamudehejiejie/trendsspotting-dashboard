@@ -29,11 +29,11 @@ class DynamicProfileGenerator {
         const backgroundImageUrl = articleWithImage ? articleWithImage.imageUrl : this.getFallbackImage(mainCategory);
 
         return {
-            id: `trending-${mainCategory}-${Date.now()}`,
-            name: `TRENDING ${mainCategory.toUpperCase()}`,
-            subtitle: 'REAL-TIME INSIGHTS',
-            year: 'LIVE FEED',
-            description: `Latest developments in ${mainCategory}: ${latestArticle.title}. ${latestArticle.description.substring(0, 200)}...`,
+            id: `trending-live-${Date.now()}`,
+            name: 'TRENDING NOW',
+            subtitle: 'REAL-TIME INSIGHTS', 
+            year: 'LIVE UPDATING',
+            description: `Latest ${mainCategory} trends: ${latestArticle.title}. ${latestArticle.description.substring(0, 200)}...`,
             background: this.getCategoryBackground(mainCategory),
             backgroundImage: backgroundImageUrl,
             artistPhoto: '',
@@ -47,14 +47,15 @@ class DynamicProfileGenerator {
                 updated: 'LIVE',
                 sources: `${new Set(articles.map(a => a.source)).size}`
             },
-            tags: this.generateTags(articles),
+            tags: ['TRENDING NOW', ...this.generateTags(articles).slice(0, 4)],
             trending: categoryArticles.slice(0, 3).map(article => ({
                 title: article.title.substring(0, 50) + '...',
                 location: article.source,
                 url: article.link,
-                imageUrl: article.imageUrl // Include image URL for trending items
+                imageUrl: article.imageUrl
             })),
             isRealTime: true,
+            isLoading: false,
             lastUpdated: new Date()
         };
     }
@@ -72,14 +73,14 @@ class DynamicProfileGenerator {
     }
 
     getFallbackImage(category) {
-        // Unsplash images related to each category as fallbacks
+        // HD Unsplash images related to each category as fallbacks
         const fallbackImages = {
-            tech: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1200&h=800&fit=crop',
-            design: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=800&fit=crop',
-            fashion: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200&h=800&fit=crop',
-            art: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1200&h=800&fit=crop',
-            music: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&h=800&fit=crop',
-            default: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&h=800&fit=crop'
+            tech: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1920&h=1080&fit=crop&q=80',
+            design: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1920&h=1080&fit=crop&q=80',
+            fashion: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=1920&h=1080&fit=crop&q=80',
+            art: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1920&h=1080&fit=crop&q=80',
+            music: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1920&h=1080&fit=crop&q=80',
+            default: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1920&h=1080&fit=crop&q=80'
         };
         return fallbackImages[category] || fallbackImages.default;
     }

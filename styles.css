@@ -29,6 +29,43 @@
     50% { opacity: 0.7; transform: scale(1.05); }
 }
 
+/* Loading Animation for Trending Profile */
+.trending-loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.trending-loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: loading-shimmer 2s infinite;
+}
+
+@keyframes loading-shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Loading state for metrics */
+.metric-loading {
+    position: relative;
+}
+
+.metric-loading .metric-value {
+    color: rgba(255, 255, 255, 0.6);
+    animation: pulse-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-loading {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background: #000;
