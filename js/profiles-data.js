@@ -206,7 +206,7 @@ const artistProfiles = [
         year: 'VIDEO ART PIONEER',
         description: 'Takeshi Murata creates hypnotic digital sculptures and glitch videos that transform familiar imagery into otherworldly experiences. His work bridges traditional Japanese aesthetics with cutting-edge digital manipulation.',
         background: 'linear-gradient(135deg, #1F2937 0%, #DC2626 50%, #F59E0B 100%)',
-        backgroundImage: 'https://www.takeshimurata.com/work/',
+        backgroundImage: 'http://takeshimurata.com/gallery_gen/dff9904477159ae26c33cda15b876487_2360x1720_-0x-0_2373.9021329988x1720.jpg',
         social: {
             handle: '@takeshimurata',
             url: 'https://twitter.com/takeshimurata'
@@ -231,7 +231,7 @@ const artistProfiles = [
         year: 'MINIMAL ELECTRONIC',
         description: 'Ryoji Ikeda transforms pure data into immersive audiovisual experiences. His minimal electronic compositions and data visualizations create transcendent experiences from mathematical precision.',
         background: 'linear-gradient(135deg, #000000 0%, #1F2937 50%, #374151 100%)',
-        backgroundImage: 'https://www.ryojiikeda.com/project/superposition/',
+        backgroundImage: 'https://commons.wikimedia.org/wiki/Special:FilePath/Ryoji_Ikeda.jpg',
         social: {
             handle: '@ryojiikeda',
             url: 'https://twitter.com/ryojiikeda'
@@ -256,7 +256,7 @@ const artistProfiles = [
         year: 'SPECULATIVE DESIGN',
         description: 'Sputniko! (Hiromi Ozaki) creates provocative projects that examine technology through a feminist lens. Her speculative designs challenge gender roles in tech and imagine alternative technological futures.',
         background: 'linear-gradient(135deg, #EC4899 0%, #F472B6 50%, #FBBF24 100%)',
-        backgroundImage: 'https://sputniko.com/projects/',
+        backgroundImage: 'https://storage.googleapis.com/studio-design-asset-files/projects/1Va6wNdJW7/s-1800x1200_v-frms_webp_9d5d03ee-16e6-4d4f-9a89-d88b17622398_regular.webp',
         social: {
             handle: '@5putn1k0',
             url: 'https://twitter.com/5putn1k0'
@@ -281,7 +281,7 @@ const artistProfiles = [
         year: 'MACHINE ORCHESTRA',
         description: 'So Kanno creates robotic performances where machines become musical performers. His works explore the relationship between humans and machines through orchestrated mechanical performances.',
         background: 'linear-gradient(135deg, #374151 0%, #6B7280 50%, #9CA3AF 100%)',
-        backgroundImage: 'https://www.so-kanno.com/works/',
+        backgroundImage: 'https://www.kanno.so/wp-content/uploads/2021/05/MG_7243-2.jpg',
         social: {
             handle: '@so_kanno',
             url: 'https://twitter.com/so_kanno'
@@ -306,7 +306,7 @@ const artistProfiles = [
         year: 'AUDIO INNOVATION',
         description: 'Yuri Suzuki designs innovative audio experiences and sound installations. His work spans from colorful modular synthesizers to architectural sound projects that make music creation accessible and playful.',
         background: 'linear-gradient(135deg, #F59E0B 0%, #EF4444 50%, #EC4899 100%)',
-        backgroundImage: 'https://yurisuzuki.com/projects/',
+        backgroundImage: 'https://www.yurisuzuki.com/content/2-projects/3-ototnomori/ototonomori-yurisuzuki-1.jpg',
         social: {
             handle: '@yuri_suzuki_',
             url: 'https://twitter.com/yuri_suzuki_'
@@ -331,7 +331,7 @@ const artistProfiles = [
         year: 'DIGITAL ARCHAEOLOGY',
         description: 'ExoNemo (Kensuke Sembo & Yae Akaiwa) are pioneers of Japanese net art, creating works that explore digital culture, online behavior, and the archaeology of internet history.',
         background: 'linear-gradient(135deg, #0F172A 0%, #1E40AF 50%, #7C3AED 100%)',
-        backgroundImage: 'https://exonemo.com/works/',
+        backgroundImage: 'https://waitingroom.jp/wp-content/uploads/2022/12/idea2.jpg',
         social: {
             handle: '@exonemo',
             url: 'https://twitter.com/exonemo'
@@ -356,7 +356,7 @@ const artistProfiles = [
         year: 'DIGITAL TOY DESIGN',
         description: 'Masahiko Sato creates digital toys and interactive installations that blur the line between play and art. His work brings Japanese kawaii culture into contemporary digital art spaces.',
         background: 'linear-gradient(135deg, #10B981 0%, #3B82F6 50%, #8B5CF6 100%)',
-        backgroundImage: 'https://masahikosato.com/btoy/',
+        backgroundImage: 'https://static.designboom.com/wp-content/uploads/2018/04/issey-miyake-masahiko-sato-my-first-me-exhibition-milan-designboom-04.jpg',
         social: {
             handle: '@masahiko_sato',
             url: 'https://twitter.com/masahiko_sato'
@@ -381,7 +381,7 @@ const artistProfiles = [
         year: 'POST-KAWAII ARTIST',
         description: 'Aya Takano evolves the Superflat movement into contemporary digital realms. Her otherworldly characters and landscapes explore themes of technology, nature, and Japanese pop culture futurism.',
         background: 'linear-gradient(135deg, #FBBF24 0%, #F472B6 50%, #8B5CF6 100%)',
-        backgroundImage: 'https://www.perrotin.com/artists/Aya_Takano/2',
+        backgroundImage: 'https://dza2a2ql7zktf.cloudfront.net/binaries-cdn/dqzqcuqf9/image/fetch/w_auto,c_fill,q_auto,dpr_1.0,f_auto,h_631/https://d2u3kfwd92fzu7.cloudfront.net/catalog/artwork/gallery/1134/Galerie_Perrotin_Aya_Takano-1.jpg',
         social: {
             handle: '@aya_takano_art',
             url: 'https://twitter.com/aya_takano_art'
@@ -406,7 +406,7 @@ const artistProfiles = [
         year: 'FASHION TECHNOLOGY',
         description: 'Akira Wakita designs experimental wearables that respond to emotion, environment, and social interaction. His work explores how clothing can become an interface for digital expression.',
         background: 'linear-gradient(135deg, #1F2937 0%, #7C3AED 50%, #EC4899 100%)',
-        backgroundImage: 'https://akirawakita.com/wearable/',
+        backgroundImage: 'https://akirawakita.com/img/work-inner/dismantle/dismantle_01.jpg',
         social: {
             handle: '@akira_wakita',
             url: 'https://twitter.com/akira_wakita'
@@ -431,7 +431,7 @@ const artistProfiles = [
         year: 'MATERIAL INNOVATOR',
         description: 'Kohei Nawa creates sculptures that seem to exist between digital and physical realms. His pixelated and liquid-like forms challenge our perception of matter and space through innovative materials.',
         background: 'linear-gradient(135deg, #065F46 0%, #059669 50%, #10B981 100%)',
-        backgroundImage: 'https://kohei-nawa.net/works/',
+        backgroundImage: 'http://kohei-nawa.net/cms/wp-content/uploads/2022/07/OMP0267--1000x660.jpg',
         social: {
             handle: '@kohei_nawa',
             url: 'https://twitter.com/kohei_nawa'
