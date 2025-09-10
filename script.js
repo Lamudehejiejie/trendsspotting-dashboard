@@ -1,3 +1,227 @@
+// RSS Feed Configuration
+const RSS_FEEDS = [
+    {
+        name: 'TechCrunch',
+        url: 'https://feeds.feedburner.com/TechCrunch',
+        category: 'tech',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Dezeen Design',
+        url: 'https://www.dezeen.com/feed/',
+        category: 'design',
+        proxy: 'https://api.allorigins.win/get?url='
+    }
+];
+
+// Subculture Keywords for Content Filtering
+const subcultureKeywords = {
+    fashion: ['fashion', 'style', 'designer', 'streetwear', 'runway', 'luxury', 'clothing', 'brand', 'collection'],
+    tech: ['AI', 'VR', 'AR', 'startup', 'innovation', 'digital', 'blockchain', 'crypto', 'app', 'software'],
+    art: ['exhibition', 'gallery', 'artist', 'installation', 'creative', 'museum', 'contemporary', 'sculpture'],
+    music: ['concert', 'festival', 'musician', 'electronic', 'underground', 'album', 'tour', 'sound'],
+    culture: ['subculture', 'youth', 'community', 'trend', 'movement', 'lifestyle', 'underground', 'emerging']
+};
+
+// RSS Feed Parser Class
+class RSSFeedParser {
+    constructor() {
+        this.cachedFeeds = new Map();
+        this.cacheTimeout = 30 * 60 * 1000; // 30 minutes
+    }
+
+    async fetchFeed(feedConfig) {
+        const cacheKey = feedConfig.url;
+        const cached = this.cachedFeeds.get(cacheKey);
+        
+        if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
+            return cached.data;
+        }
+
+        try {
+            const proxyUrl = feedConfig.proxy + encodeURIComponent(feedConfig.url);
+            const response = await fetch(proxyUrl);
+            const data = await response.json();
+            
+            if (data.contents) {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data.contents, 'application/xml');
+                const articles = this.parseRSSContent(xmlDoc, feedConfig);
+                
+                this.cachedFeeds.set(cacheKey, {
+                    data: articles,
+                    timestamp: Date.now()
+                });
+                
+                return articles;
+            }
+        } catch (error) {
+            console.error(`Error fetching RSS feed ${feedConfig.name}:`, error);
+            return [];
+        }
+    }
+
+    parseRSSContent(xmlDoc, feedConfig) {
+        const items = xmlDoc.querySelectorAll('item');
+        const articles = [];
+
+        items.forEach((item, index) => {
+            if (index >= 10) return; // Limit to 10 articles per feed
+
+            const title = item.querySelector('title')?.textContent || '';
+            const description = item.querySelector('description')?.textContent || '';
+            const link = item.querySelector('link')?.textContent || '';
+            const pubDate = item.querySelector('pubDate')?.textContent || '';
+            const category = item.querySelector('category')?.textContent || feedConfig.category;
+
+            // Filter for subculture relevance
+            if (this.isSubcultureRelevant(title, description)) {
+                articles.push({
+                    title: this.cleanText(title),
+                    description: this.cleanText(description),
+                    link,
+                    pubDate: new Date(pubDate),
+                    category,
+                    source: feedConfig.name,
+                    relevanceScore: this.calculateRelevanceScore(title, description)
+                });
+            }
+        });
+
+        return articles.sort((a, b) => b.relevanceScore - a.relevanceScore);
+    }
+
+    isSubcultureRelevant(title, description) {
+        const text = (title + ' ' + description).toLowerCase();
+        
+        for (const [category, keywords] of Object.entries(subcultureKeywords)) {
+            for (const keyword of keywords) {
+                if (text.includes(keyword.toLowerCase())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    calculateRelevanceScore(title, description) {
+        const text = (title + ' ' + description).toLowerCase();
+        let score = 0;
+        
+        for (const [category, keywords] of Object.entries(subcultureKeywords)) {
+            for (const keyword of keywords) {
+                if (text.includes(keyword.toLowerCase())) {
+                    score += 1;
+                }
+            }
+        }
+        return score;
+    }
+
+    cleanText(text) {
+        return text.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, '').trim();
+    }
+
+    async getAllRelevantArticles() {
+        const allArticles = [];
+        
+        for (const feedConfig of RSS_FEEDS) {
+            const articles = await this.fetchFeed(feedConfig);
+            allArticles.push(...articles);
+        }
+        
+        return allArticles
+            .sort((a, b) => b.pubDate - a.pubDate)
+            .slice(0, 20); // Top 20 most recent relevant articles
+    }
+}
+
+// Dynamic Profile Generator
+class DynamicProfileGenerator {
+    constructor() {
+        this.rssParser = new RSSFeedParser();
+    }
+
+    async generateProfileFromArticles(articles) {
+        if (!articles || articles.length === 0) return null;
+
+        // Group articles by category
+        const categories = {};
+        articles.forEach(article => {
+            if (!categories[article.category]) {
+                categories[article.category] = [];
+            }
+            categories[article.category].push(article);
+        });
+
+        // Find the most prominent category
+        const mainCategory = Object.keys(categories).reduce((a, b) => 
+            categories[a].length > categories[b].length ? a : b
+        );
+
+        const categoryArticles = categories[mainCategory];
+        const latestArticle = categoryArticles[0];
+
+        return {
+            id: `trending-${mainCategory}-${Date.now()}`,
+            name: `TRENDING ${mainCategory.toUpperCase()}`,
+            subtitle: 'REAL-TIME INSIGHTS',
+            year: 'LIVE FEED',
+            description: `Latest developments in ${mainCategory}: ${latestArticle.title}. ${latestArticle.description.substring(0, 200)}...`,
+            background: this.getCategoryBackground(mainCategory),
+            backgroundImage: '', // Could add image extraction later
+            artistPhoto: '',
+            social: {
+                handle: '@trendspotting',
+                url: latestArticle.link
+            },
+            isCurrentlyTrending: true,
+            metrics: {
+                articles: `${articles.length}`,
+                updated: 'LIVE',
+                sources: `${new Set(articles.map(a => a.source)).size}`
+            },
+            tags: this.generateTags(articles),
+            trending: categoryArticles.slice(0, 3).map(article => ({
+                title: article.title.substring(0, 50) + '...',
+                location: article.source,
+                url: article.link
+            })),
+            isRealTime: true,
+            lastUpdated: new Date()
+        };
+    }
+
+    getCategoryBackground(category) {
+        const backgrounds = {
+            tech: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+            design: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
+            fashion: 'linear-gradient(135deg, #000000 0%, #434343 50%, #000000 100%)',
+            art: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffd23f 100%)',
+            music: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #093637 100%)',
+            default: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 50%, #ff6b35 100%)'
+        };
+        return backgrounds[category] || backgrounds.default;
+    }
+
+    generateTags(articles) {
+        const allText = articles.map(a => a.title + ' ' + a.description).join(' ').toLowerCase();
+        const foundTags = [];
+        
+        for (const [category, keywords] of Object.entries(subcultureKeywords)) {
+            for (const keyword of keywords) {
+                if (allText.includes(keyword.toLowerCase()) && !foundTags.includes(keyword.toUpperCase())) {
+                    foundTags.push(keyword.toUpperCase());
+                    if (foundTags.length >= 5) break;
+                }
+            }
+            if (foundTags.length >= 5) break;
+        }
+        
+        return foundTags.length > 0 ? foundTags : ['TRENDING', 'REAL-TIME', 'CURRENT'];
+    }
+}
+
 // Artist Profile Data
 const artistProfiles = [
     {
@@ -214,30 +438,77 @@ class DashboardController {
     constructor() {
         this.currentProfileIndex = 0;
         this.isTransitioning = false;
+        this.dynamicProfileGenerator = new DynamicProfileGenerator();
+        this.allProfiles = [...artistProfiles]; // Start with static profiles
+        this.realTimeUpdateInterval = null;
         this.init();
     }
 
-    init() {
+    async init() {
         this.createProfileNavigation();
         this.setupEventListeners();
         this.updateProfile(0, false);
         this.startAutoRotation();
+        
+        // Load real-time content
+        await this.loadRealTimeProfiles();
+        this.startRealTimeUpdates();
+    }
+
+    async loadRealTimeProfiles() {
+        try {
+            console.log('Loading real-time profiles...');
+            const articles = await this.dynamicProfileGenerator.rssParser.getAllRelevantArticles();
+            
+            if (articles.length > 0) {
+                const realTimeProfile = await this.dynamicProfileGenerator.generateProfileFromArticles(articles);
+                
+                if (realTimeProfile) {
+                    // Remove any existing real-time profiles
+                    this.allProfiles = this.allProfiles.filter(p => !p.isRealTime);
+                    
+                    // Add new real-time profile at the beginning
+                    this.allProfiles.unshift(realTimeProfile);
+                    
+                    // Update navigation
+                    this.createProfileNavigation();
+                    
+                    console.log(`Added real-time profile: ${realTimeProfile.name}`);
+                    console.log(`Based on ${articles.length} articles`);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading real-time profiles:', error);
+        }
+    }
+
+    startRealTimeUpdates() {
+        // Update real-time content every 15 minutes
+        this.realTimeUpdateInterval = setInterval(() => {
+            this.loadRealTimeProfiles();
+        }, 15 * 60 * 1000);
     }
 
     createProfileNavigation() {
         const artistNavigation = document.querySelector('.artist-navigation');
         artistNavigation.innerHTML = `
             <div class="artist-list">
-                ${artistProfiles.map((profile, index) => `
-                    <button class="artist-card ${index === 0 ? 'active' : ''}" 
+                ${this.allProfiles.map((profile, index) => `
+                    <button class="artist-card ${index === 0 ? 'active' : ''} ${profile.isRealTime ? 'real-time-profile' : ''}" 
                             data-index="${index}">
                         <div class="artist-name">${profile.name}</div>
                         <div class="artist-domain">${profile.tags[0]}</div>
                         ${profile.isCurrentlyTrending ? '<div class="mini-trending">●</div>' : ''}
+                        ${profile.isRealTime ? '<div class="live-indicator">LIVE</div>' : ''}
                     </button>
                 `).join('')}
             </div>
         `;
+        
+        // Re-attach event listeners
+        document.querySelectorAll('.artist-card').forEach((btn, index) => {
+            btn.addEventListener('click', () => this.switchToProfile(index));
+        });
     }
 
     setupEventListeners() {
@@ -267,13 +538,13 @@ class DashboardController {
     }
 
     nextProfile() {
-        const nextIndex = (this.currentProfileIndex + 1) % artistProfiles.length;
+        const nextIndex = (this.currentProfileIndex + 1) % this.allProfiles.length;
         this.switchToProfile(nextIndex);
     }
 
     previousProfile() {
         const prevIndex = this.currentProfileIndex === 0 
-            ? artistProfiles.length - 1 
+            ? this.allProfiles.length - 1 
             : this.currentProfileIndex - 1;
         this.switchToProfile(prevIndex);
     }
@@ -281,7 +552,7 @@ class DashboardController {
     updateProfile(index, animate = true) {
         if (this.isTransitioning) return;
         
-        const profile = artistProfiles[index];
+        const profile = this.allProfiles[index];
         this.isTransitioning = true;
 
         if (animate) {
