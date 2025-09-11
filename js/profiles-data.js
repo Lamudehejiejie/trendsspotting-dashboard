@@ -31,7 +31,7 @@ const artistProfiles = [
         year: 'VIDEO ART PIONEER',
         description: 'Takeshi Murata creates hypnotic digital sculptures and glitch videos that transform familiar imagery into otherworldly experiences. His work bridges traditional Japanese aesthetics with cutting-edge digital manipulation.',
         background: 'linear-gradient(135deg, #1F2937 0%, #DC2626 50%, #F59E0B 100%)',
-        backgroundImage: 'http://takeshimurata.com/gallery_gen/dff9904477159ae26c33cda15b876487_2360x1720_-0x-0_2373.9021329988x1720.jpg',
+        backgroundImage: 'https://themassage.jp/wwp/wp-content/uploads/2018/08/TMu_The_Sisterhood_2011_23.jpg',
         social: {
             handle: '@takeshimurata',
             url: 'https://twitter.com/takeshimurata'
@@ -231,7 +231,7 @@ const artistProfiles = [
         year: 'MATERIAL INNOVATOR',
         description: 'Kohei Nawa creates sculptures that seem to exist between digital and physical realms. His pixelated and liquid-like forms challenge our perception of matter and space through innovative materials.',
         background: 'linear-gradient(135deg, #065F46 0%, #059669 50%, #10B981 100%)',
-        backgroundImage: 'http://kohei-nawa.net/cms/wp-content/uploads/2022/07/OMP0267--1000x660.jpg',
+        backgroundImage: 'https://hubemag.com/wp-content/uploads/2024/09/6B4405A9-7278-472F-825B-4E132002E7A7-1536x1193.jpg',
         social: {
             handle: '@kohei_nawa',
             url: 'https://twitter.com/kohei_nawa'
