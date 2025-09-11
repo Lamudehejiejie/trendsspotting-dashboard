@@ -28,6 +28,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Interactive logo effects
+    const usnLogo = document.getElementById('usnLogo');
+    const claudeLogo = document.getElementById('claudeLogo');
+
+    // USN Logo rotation effect
+    if (usnLogo) {
+        usnLogo.addEventListener('mousemove', (e) => {
+            const rect = usnLogo.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const deltaX = e.clientX - centerX;
+            const deltaY = e.clientY - centerY;
+            const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+            
+            usnLogo.style.transform = `rotate(${angle}deg)`;
+        });
+
+        usnLogo.addEventListener('mouseleave', () => {
+            usnLogo.style.transform = 'rotate(0deg)';
+        });
+    }
+
+    // Claude Logo stretch effect
+    if (claudeLogo) {
+        claudeLogo.addEventListener('mousemove', (e) => {
+            const rect = claudeLogo.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const deltaX = e.clientX - centerX;
+            const deltaY = e.clientY - centerY;
+            
+            // Normalize distances to [0, 1] range
+            const maxDistance = Math.max(rect.width, rect.height) / 2;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const stretchFactor = Math.max(0, 1 - distance / maxDistance) * 0.3 + 1;
+            
+            // Calculate direction for stretch
+            const angle = Math.atan2(deltaY, deltaX);
+            const stretchX = 1 + Math.cos(angle) * (stretchFactor - 1) * 0.5;
+            const stretchY = 1 + Math.sin(angle) * (stretchFactor - 1) * 0.5;
+            
+            claudeLogo.style.transform = `scale(${stretchX}, ${stretchY})`;
+        });
+
+        claudeLogo.addEventListener('mouseleave', () => {
+            claudeLogo.style.transform = 'scale(1, 1)';
+        });
+    }
+
     // Console welcome message
     console.log(`
     🎨 Trendspotting Dashboard v2.0
