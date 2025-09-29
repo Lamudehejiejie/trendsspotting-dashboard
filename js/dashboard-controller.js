@@ -5,44 +5,66 @@ class DashboardController {
         this.dynamicProfileGenerator = new DynamicProfileGenerator();
         this.carouselManager = new CarouselManager(this);
         this.liveTabsManager = new LiveTabsManager(this);
+        this.brightnessDetector = new BrightnessDetector();
         this.allProfiles = [...artistProfiles]; // Start with static profiles
         this.realTimeUpdateInterval = null;
         this.init();
     }
 
     async init() {
-        // Initialize live tabs first
-        await this.liveTabsManager.initializeLiveTabs();
+        // Always start with static profiles to ensure tabs are visible immediately
+        this.allProfiles = [...artistProfiles];
 
-        // Add live profiles to the beginning of all profiles
-        const liveProfiles = this.liveTabsManager.getAllLiveProfiles();
-        this.allProfiles = [...liveProfiles, ...artistProfiles];
-
+        // Create initial navigation with static profiles
         this.createProfileNavigation();
         this.setupEventListeners();
         this.updateProfile(0, false);
         this.startAutoRotation();
+
+        // Initialize event tabs in background (this will update navigation when done)
+        this.liveTabsManager.initializeLiveTabs();
     }
 
-    onLiveTabUpdated(categoryKey, updatedProfile) {
-        // Callback for when a live tab gets updated
-        const profileIndex = this.allProfiles.findIndex(p =>
-            p.isLiveTab && p.category === categoryKey
+    onEventTabsUpdated(updateType, eventProfiles) {
+        // Callback for when event tabs are updated
+        console.log(`🔄 Event tabs updated: ${updateType}`);
+
+        const wasViewingEventTab = this.allProfiles[this.currentProfileIndex]?.isEventTab;
+        const hadEventTabs = this.allProfiles.some(p => p.isEventTab);
+
+        // Remove existing event profiles and add new ones
+        this.allProfiles = this.allProfiles.filter(p => !p.isEventTab);
+        this.allProfiles = [...eventProfiles, ...artistProfiles];
+
+        // Recreate navigation with new event tabs
+        this.createProfileNavigation();
+
+        // Auto-jump logic for new real-time tabs
+        const currentProfile = this.allProfiles[this.currentProfileIndex];
+        const isOnSystemTab = currentProfile && (
+            currentProfile.category === 'loading' ||
+            currentProfile.category === 'error' ||
+            currentProfile.category === 'system'
         );
 
-        if (profileIndex !== -1) {
-            this.allProfiles[profileIndex] = updatedProfile;
-
-            // If this is the currently displayed profile, update the view
-            if (profileIndex === this.currentProfileIndex) {
-                this.updateContent(updatedProfile);
-            }
-
-            // Update navigation to reflect changes
-            this.updateNavigationCard(profileIndex, updatedProfile);
-
-            console.log(`🔄 Updated live tab: ${updatedProfile.name}`);
+        if (updateType === 'events-created' && eventProfiles.length > 0 && isOnSystemTab) {
+            // New event tabs were created and user is on a system tab, jump to the first event
+            console.log('🎯 New events found, jumping from system tab to first event tab');
+            this.currentProfileIndex = 0;
+            this.updateProfile(0, true);
+        } else if (wasViewingEventTab && eventProfiles.length === 0) {
+            // Was viewing an event tab but no events available, go to first static profile
+            console.log('📋 No events available, switching to static profiles');
+            this.currentProfileIndex = eventProfiles.length; // First static profile
+            this.updateProfile(this.currentProfileIndex, true);
+        } else if (this.currentProfileIndex >= this.allProfiles.length) {
+            // Current index is out of bounds, go to first available tab
+            this.currentProfileIndex = 0;
+            this.updateProfile(0, true);
         }
+        // Don't auto-jump if user is actively viewing static profiles
+
+        console.log(`✅ Updated navigation with ${eventProfiles.length} event tabs + ${artistProfiles.length} static profiles`);
     }
 
     updateNavigationCard(index, profile) {
@@ -72,11 +94,12 @@ class DashboardController {
                 <div class="artist-carousel">
                     <div class="artist-list">
                         ${this.allProfiles.map((profile, index) => `
-                            <button class="artist-card ${index === 0 ? 'active' : ''} ${profile.isLiveTab ? 'live-tab-profile' : ''} ${profile.isLoading ? 'loading' : ''}"
+                            <button class="artist-card ${index === 0 ? 'active' : ''} ${profile.isEventTab ? 'event-tab-profile' : ''} ${profile.isLiveTab ? 'live-tab-profile' : ''} ${profile.isLoading ? 'loading' : ''}"
                                     data-index="${index}">
                                 <div class="artist-name">${profile.name}</div>
                                 <div class="artist-domain">${profile.tags[0]}</div>
                                 ${profile.isCurrentlyTrending ? '<div class="mini-trending">●</div>' : ''}
+                                ${profile.isEventTab ? '<div class="event-indicator">EVENT</div>' : ''}
                                 ${profile.isLiveTab ? '<div class="live-indicator">LIVE</div>' : ''}
                                 ${profile.isLoading ? '<div class="loading-indicator">⟳</div>' : ''}
                             </button>
@@ -154,6 +177,9 @@ class DashboardController {
         // Update background
         const backgroundLayer = document.querySelector('.background-layer');
         backgroundLayer.style.background = profile.background;
+
+        // Reset background image first
+        backgroundLayer.style.backgroundImage = '';
         
         // Add loading class if profile is loading
         const mainContent = document.querySelector('.main-content');
@@ -165,12 +191,25 @@ class DashboardController {
 
         // Update title with trending indicator
         const titleElement = document.querySelector('.main-title');
-        const trendingIndicator = profile.isCurrentlyTrending ? 
+        const trendingIndicator = profile.isCurrentlyTrending ?
             '<span class="trending-badge">TRENDING</span>' : '';
-        titleElement.innerHTML = `
-            ${profile.name}${trendingIndicator}<br>
-            <span class="title-highlight">${profile.subtitle}</span>
-        `;
+
+        // For event tabs, show the actual event title prominently and website name smaller
+        if (profile.isEventTab && profile.eventData) {
+            titleElement.innerHTML = `
+                <span class="event-source">${profile.name}</span>${trendingIndicator}<br>
+                <span class="title-highlight">${profile.eventData.title}</span>
+            `;
+            // Apply adaptive sizing for event title
+            this.applyAdaptiveTextSizing(titleElement.querySelector('.title-highlight'), profile.eventData.title);
+        } else {
+            titleElement.innerHTML = `
+                ${profile.name}${trendingIndicator}<br>
+                <span class="title-highlight">${profile.subtitle}</span>
+            `;
+            // Apply adaptive sizing for subtitle
+            this.applyAdaptiveTextSizing(titleElement.querySelector('.title-highlight'), profile.subtitle);
+        }
 
         // Update subtitle with year and social handle
         const subtitleElement = document.querySelector('.title-subtitle');
@@ -220,13 +259,19 @@ class DashboardController {
             </a>
         `).join('');
         
-        // Update background image
+        // Update background image and detect brightness
         if (profile.backgroundImage) {
             const backgroundLayer = document.querySelector('.background-layer');
             backgroundLayer.style.backgroundImage = `url(${profile.backgroundImage})`;
             backgroundLayer.style.backgroundSize = 'cover';
             backgroundLayer.style.backgroundPosition = 'center';
             backgroundLayer.style.backgroundBlendMode = 'overlay';
+
+            // Detect brightness of the background image
+            this.brightnessDetector.detectBackgroundBrightness(profile.backgroundImage);
+        } else {
+            // No background image, analyze gradient background
+            this.brightnessDetector.detectGradientBrightness(profile.background || '');
         }
         
         // Update profile photo (only if element exists)
@@ -303,5 +348,27 @@ class DashboardController {
         if (this.autoRotationInterval) {
             clearInterval(this.autoRotationInterval);
         }
+    }
+
+    applyAdaptiveTextSizing(element, text) {
+        if (!element || !text) return;
+
+        // Remove existing size classes
+        element.classList.remove('short-text', 'medium-text', 'long-text', 'very-long-text');
+
+        // Determine text length category
+        const textLength = text.length;
+
+        if (textLength <= 30) {
+            element.classList.add('short-text');
+        } else if (textLength <= 50) {
+            element.classList.add('medium-text');
+        } else if (textLength <= 80) {
+            element.classList.add('long-text');
+        } else {
+            element.classList.add('very-long-text');
+        }
+
+        console.log(`📏 Applied adaptive sizing: ${textLength} chars -> ${element.className.split(' ').find(c => c.endsWith('-text'))}`);
     }
 }

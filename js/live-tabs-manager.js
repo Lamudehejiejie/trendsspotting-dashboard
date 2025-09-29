@@ -3,234 +3,357 @@ class LiveTabsManager {
         this.dashboardController = dashboardController;
         this.rssParser = new RSSFeedParser();
         this.profileGenerator = new DynamicProfileGenerator();
-        this.liveProfiles = new Map();
+        this.eventProfiles = new Map(); // Changed from liveProfiles to eventProfiles
         this.savedProfiles = new Map(); // For auto-save functionality
-        this.updateIntervals = new Map();
+        this.updateInterval = null;
+        this.maxEventTabs = 15; // Limit number of event tabs to prevent overwhelming UI
 
-        // Define live tab categories with their display names and descriptions
-        this.liveCategories = {
-            'trending': {
-                name: 'TRENDING NOW',
-                subtitle: 'ALL CATEGORIES',
-                description: 'Real-time trending content across all categories',
-                color: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-                icon: '🔥',
-                keywords: ['trending', 'viral', 'popular', 'hot', 'breaking']
-            },
-            'tech': {
-                name: 'TECH LIVE',
-                subtitle: 'TECHNOLOGY & AI',
-                description: 'Latest technology trends, AI breakthroughs, and digital innovations',
-                color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                icon: '💻',
-                keywords: ['AI', 'tech', 'software', 'startup', 'innovation']
-            },
-            'fashion': {
-                name: 'FASHION LIVE',
-                subtitle: 'STYLE & STREETWEAR',
-                description: 'Latest fashion trends, designer drops, and streetwear culture',
-                color: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)',
-                icon: '👗',
-                keywords: ['fashion', 'style', 'designer', 'streetwear', 'runway']
-            },
-            'music': {
-                name: 'MUSIC LIVE',
-                subtitle: 'FESTIVALS & ARTISTS',
-                description: 'Latest music releases, festival announcements, and artist news',
-                color: 'linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%)',
-                icon: '🎵',
-                keywords: ['music', 'festival', 'concert', 'artist', 'album']
-            },
-            'design': {
-                name: 'DESIGN LIVE',
-                subtitle: 'CREATIVE & VISUAL',
-                description: 'Latest design trends, creative works, and visual culture',
-                color: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)',
-                icon: '🎨',
-                keywords: ['design', 'creative', 'visual', 'typography', 'branding']
-            },
-            'art': {
-                name: 'ART LIVE',
-                subtitle: 'CONTEMPORARY & DIGITAL',
-                description: 'Latest art exhibitions, installations, and digital art movements',
-                color: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
-                icon: '🖼️',
-                keywords: ['art', 'gallery', 'exhibition', 'installation', 'contemporary']
-            },
-            'social-trends': {
-                name: 'SOCIAL LIVE',
-                subtitle: 'VIRAL & TRENDING',
-                description: 'Social media trends, viral content, and digital culture movements',
-                color: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-                icon: '📱',
-                keywords: ['viral', 'social', 'influencer', 'tiktok', 'instagram']
-            }
+        // Color schemes for different categories
+        this.categoryColors = {
+            'tech': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'fashion': 'linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)',
+            'music': 'linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%)',
+            'design': 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)',
+            'art': 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+            'social-trends': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+            'entertainment': 'linear-gradient(135deg, #ff7979 0%, #fdcb6e 100%)',
+            'campaigns': 'linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%)',
+            'games': 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)',
+            'trends': 'linear-gradient(135deg, #00cec9 0%, #55a3ff 100%)',
+            'default': 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)'
+        };
+
+        // Icons for different categories
+        this.categoryIcons = {
+            'tech': '💻',
+            'fashion': '👗',
+            'music': '🎵',
+            'design': '🎨',
+            'art': '🖼️',
+            'social-trends': '📱',
+            'entertainment': '🎬',
+            'campaigns': '📢',
+            'games': '🎮',
+            'trends': '🔥',
+            'default': '⭐'
         };
     }
 
     async initializeLiveTabs() {
-        console.log('🚀 Initializing live tabs...');
+        console.log('🚀 Initializing event-based live tabs...');
 
-        // Create initial profiles for each category
-        for (const [categoryKey, categoryInfo] of Object.entries(this.liveCategories)) {
-            await this.createInitialCategoryProfile(categoryKey, categoryInfo);
-        }
+        // Create initial loading tab
+        this.createInitialLoadingTab();
 
-        // Start updating all live tabs
+        // Start fetching real events
+        await this.fetchAndCreateEventTabs();
+
+        // Start updating event tabs periodically
         this.startLiveUpdates();
     }
 
-    async createInitialCategoryProfile(categoryKey, categoryInfo) {
-        const initialProfile = {
-            id: `live-${categoryKey}-${Date.now()}`,
-            name: categoryInfo.name,
-            subtitle: categoryInfo.subtitle,
+    createInitialLoadingTab() {
+        const loadingProfile = {
+            id: `loading-events-${Date.now()}`,
+            name: 'LOADING EVENTS',
+            subtitle: 'FETCHING TRENDING',
             year: 'LIVE UPDATING',
-            description: `${categoryInfo.description} Loading latest content...`,
-            background: categoryInfo.color,
-            backgroundImage: await this.getDefaultBackgroundForCategory(categoryKey),
+            description: 'Discovering trending events from multiple sources. Individual tabs will appear for each trending event...',
+            background: this.categoryColors.default,
+            backgroundImage: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1920&h=1080&fit=crop&q=80',
             artistPhoto: '',
             social: {
-                handle: '@live_updates',
+                handle: '@live_events',
                 url: '#'
             },
             isCurrentlyTrending: true,
             metrics: {
                 status: 'LOADING',
-                sources: 'MULTIPLE',
-                updated: 'LIVE'
+                events: '0',
+                sources: 'MULTIPLE'
             },
-            tags: [categoryInfo.icon + ' ' + categoryInfo.name.replace(' LIVE', ''), 'REAL-TIME', 'UPDATING'],
+            tags: ['🔄 LOADING', 'EVENT TABS', 'LIVE'],
             trending: [
-                { title: 'Fetching Latest Content...', location: 'RSS Feeds', url: '#' },
-                { title: 'Analyzing Trends...', location: 'Multiple Sources', url: '#' },
-                { title: 'Real-time Updates...', location: 'Live Data', url: '#' }
+                { title: 'Scanning RSS Feeds...', location: 'Multiple Sources', url: '#' },
+                { title: 'Analyzing Content...', location: 'AI Processing', url: '#' },
+                { title: 'Creating Event Tabs...', location: 'Dynamic Generation', url: '#' }
             ],
             isRealTime: true,
             isLiveTab: true,
-            category: categoryKey,
+            isEventTab: true,
+            category: 'loading',
             isLoading: true,
             lastUpdated: new Date()
         };
 
-        this.liveProfiles.set(categoryKey, initialProfile);
-
-        // Load actual content for this category
-        this.updateCategoryProfile(categoryKey);
+        this.eventProfiles.set('loading', loadingProfile);
     }
 
-    async updateCategoryProfile(categoryKey) {
+    async fetchAndCreateEventTabs() {
         try {
-            console.log(`📡 Updating ${categoryKey} live tab...`);
+            console.log('📡 Fetching trending events for individual tabs...');
 
-            const categoryInfo = this.liveCategories[categoryKey];
-            let articles = [];
+            // Get all articles from RSS feeds
+            const allArticles = await this.rssParser.getAllRelevantArticles();
 
-            if (categoryKey === 'trending') {
-                // For trending tab, get articles from all categories
-                articles = await this.rssParser.getAllRelevantArticles();
-            } else {
-                // For specific category tabs
-                articles = await this.rssParser.getArticlesByCategory(categoryKey);
-            }
+            if (allArticles.length > 0) {
+                console.log(`✅ Found ${allArticles.length} trending events`);
 
-            if (articles.length > 0) {
-                console.log(`✅ Found ${articles.length} articles for ${categoryKey}`);
+                // Remove loading tab
+                this.eventProfiles.delete('loading');
 
-                // Generate enhanced profile from articles
-                const enhancedProfile = await this.generateEnhancedProfile(categoryKey, categoryInfo, articles);
+                // Create individual tabs for top trending events
+                const topEvents = allArticles
+                    .sort((a, b) => b.relevanceScore - a.relevanceScore) // Sort by relevance
+                    .slice(0, this.maxEventTabs); // Limit number of tabs
 
-                // Save to auto-save storage
-                this.saveProfileData(categoryKey, enhancedProfile, articles);
+                for (let i = 0; i < topEvents.length; i++) {
+                    const article = topEvents[i];
+                    await this.createEventTab(article, i);
+                }
 
-                // Update the live profile
-                this.liveProfiles.set(categoryKey, enhancedProfile);
+                console.log(`🎯 Created ${topEvents.length} event tabs`);
 
-                // If this category is currently visible, update the display
-                this.notifyDashboardUpdate(categoryKey);
+                // Notify dashboard to refresh navigation
+                this.notifyDashboardUpdate('events-created');
 
             } else {
-                console.log(`⚠️ No articles found for ${categoryKey}, keeping loading state`);
+                console.log('⚠️ No trending events found, but keeping static profiles available');
+                this.createNoEventsTab();
+                this.notifyDashboardUpdate('no-events');
             }
+
         } catch (error) {
-            console.error(`❌ Error updating ${categoryKey} live tab:`, error);
+            console.error('❌ Error fetching events:', error);
+            this.createErrorTab();
+            this.notifyDashboardUpdate('error');
         }
     }
 
-    async generateEnhancedProfile(categoryKey, categoryInfo, articles) {
-        // Extract trending items from articles
-        const trendingItems = articles.slice(0, 5).map(article => ({
-            title: article.title.length > 50 ? article.title.substring(0, 50) + '...' : article.title,
-            location: article.source,
-            url: article.link || '#'
-        }));
+    async createEventTab(article, index) {
+        const eventId = `event-${index}-${Date.now()}`;
 
-        // Calculate metrics based on articles
-        const sources = new Set(articles.map(a => a.source)).size;
-        const totalRelevanceScore = articles.reduce((sum, a) => sum + (a.relevanceScore || 1), 0);
-        const avgScore = Math.round(totalRelevanceScore / articles.length * 100) / 100;
+        // Shorten title if too long for tab display
+        const shortTitle = article.title.length > 40 ?
+            article.title.substring(0, 40) + '...' :
+            article.title;
 
-        // Find best background image from articles
-        const articleWithImage = articles.find(a => a.imageUrl);
-        const backgroundImage = articleWithImage ?
-            articleWithImage.imageUrl :
-            await this.getDefaultBackgroundForCategory(categoryKey);
+        // Get category info for styling
+        const categoryColor = this.categoryColors[article.category] || this.categoryColors.default;
+        const categoryIcon = this.categoryIcons[article.category] || this.categoryIcons.default;
 
-        // Create enhanced description
-        const topTopics = this.extractTopTopics(articles, categoryInfo.keywords);
-        const description = `${categoryInfo.description} Currently featuring ${topTopics.join(', ').toLowerCase()}.`;
+        // Create related events from same source/category
+        const relatedEvents = await this.getRelatedEvents(article);
 
-        return {
-            id: `live-${categoryKey}-${Date.now()}`,
-            name: categoryInfo.name,
-            subtitle: categoryInfo.subtitle,
-            year: 'LIVE FEED',
-            description: description,
-            background: categoryInfo.color,
-            backgroundImage: backgroundImage,
+        const eventProfile = {
+            id: eventId,
+            name: article.source.toUpperCase(), // Changed: Use website name instead of event title
+            subtitle: categoryIcon + ' ' + (article.category?.toUpperCase() || 'TRENDING'), // Show category with icon
+            year: this.formatTimeAgo(article.pubDate),
+            description: article.description || article.title, // Use full article title in description
+            background: categoryColor,
+            backgroundImage: article.imageUrl || await this.getDefaultBackgroundForCategory(article.category),
             artistPhoto: '',
             social: {
-                handle: '@live_updates',
+                handle: `@${article.source.toLowerCase().replace(/\s+/g, '_')}`,
+                url: article.link || '#'
+            },
+            isCurrentlyTrending: true,
+            metrics: {
+                relevance: article.relevanceScore?.toString() || '1',
+                category: article.category?.toUpperCase() || 'TRENDING',
+                time: this.formatTimeAgo(article.pubDate)
+            },
+            tags: [
+                categoryIcon + ' ' + (article.category?.toUpperCase() || 'TRENDING'),
+                'LIVE EVENT',
+                'AUTO-SAVED'
+            ],
+            trending: [
+                // Keep the original event as the first trending item with full title and link
+                {
+                    title: article.title,
+                    location: article.source,
+                    url: article.link || '#'
+                },
+                ...relatedEvents.slice(0, 2) // Add 2 more related events instead of 3
+            ],
+            isRealTime: true,
+            isLiveTab: true,
+            isEventTab: true,
+            category: article.category,
+            eventData: article,
+            isLoading: false,
+            lastUpdated: new Date()
+        };
+
+        this.eventProfiles.set(eventId, eventProfile);
+
+        // Auto-save this event
+        this.saveEventData(eventId, eventProfile, article);
+
+        return eventProfile;
+    }
+
+    async getRelatedEvents(mainArticle) {
+        try {
+            // Get articles from the same category
+            const categoryArticles = await this.rssParser.getArticlesByCategory(mainArticle.category);
+
+            // Filter out the main article and get top 3 related ones
+            const relatedArticles = categoryArticles
+                .filter(article => article.link !== mainArticle.link)
+                .slice(0, 3);
+
+            return relatedArticles.map(article => ({
+                title: article.title.length > 50 ? article.title.substring(0, 50) + '...' : article.title,
+                location: article.source,
+                url: article.link || '#'
+            }));
+        } catch (error) {
+            console.error('Error fetching related events:', error);
+            return [
+                { title: 'More trending events loading...', location: 'Multiple Sources', url: '#' }
+            ];
+        }
+    }
+
+    formatTimeAgo(date) {
+        const now = new Date();
+        const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes}m ago`;
+        } else if (diffInMinutes < 1440) {
+            return `${Math.floor(diffInMinutes / 60)}h ago`;
+        } else {
+            return `${Math.floor(diffInMinutes / 1440)}d ago`;
+        }
+    }
+
+    createNoEventsTab() {
+        const noEventsProfile = {
+            id: `no-events-${Date.now()}`,
+            name: 'NO EVENTS FOUND',
+            subtitle: 'CHECKING SOURCES',
+            year: 'LIVE SYSTEM',
+            description: 'No trending events found at the moment. The system is continuously monitoring RSS feeds for new content.',
+            background: this.categoryColors.default,
+            backgroundImage: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1920&h=1080&fit=crop&q=80',
+            artistPhoto: '',
+            social: {
+                handle: '@live_events',
                 url: '#'
             },
             isCurrentlyTrending: true,
             metrics: {
-                articles: articles.length.toString(),
-                sources: sources.toString(),
-                score: avgScore.toString()
+                status: 'MONITORING',
+                events: '0',
+                sources: 'ACTIVE'
             },
-            tags: [
-                categoryInfo.icon + ' ' + categoryInfo.name.replace(' LIVE', ''),
-                'LIVE',
-                `${articles.length} ITEMS`,
-                'AUTO-SAVED'
+            tags: ['🔍 MONITORING', 'LIVE SYSTEM', 'NO EVENTS'],
+            trending: [
+                { title: 'Monitoring RSS Feeds...', location: 'Multiple Sources', url: '#' },
+                { title: 'Waiting for Events...', location: 'Real-time', url: '#' },
+                { title: 'Check Back Soon...', location: 'Auto-refresh', url: '#' }
             ],
-            trending: trendingItems,
             isRealTime: true,
             isLiveTab: true,
-            category: categoryKey,
+            isEventTab: true,
+            category: 'system',
             isLoading: false,
-            lastUpdated: new Date(),
-            articlesData: articles // Store for auto-save
+            lastUpdated: new Date()
         };
+
+        this.eventProfiles.set('no-events', noEventsProfile);
     }
 
-    extractTopTopics(articles, keywords) {
-        const topicCount = {};
+    createErrorTab() {
+        const errorProfile = {
+            id: `error-events-${Date.now()}`,
+            name: 'SYSTEM ERROR',
+            subtitle: 'CONNECTION ISSUE',
+            year: 'LIVE SYSTEM',
+            description: 'Error loading trending events. Check console for details. The system will retry automatically.',
+            background: 'linear-gradient(135deg, #ff7979 0%, #fdcb6e 100%)',
+            backgroundImage: '',
+            artistPhoto: '',
+            social: {
+                handle: '@system_debug',
+                url: '#'
+            },
+            isCurrentlyTrending: false,
+            metrics: {
+                status: 'ERROR',
+                retry: 'AUTO',
+                debug: 'CONSOLE'
+            },
+            tags: ['❌ ERROR', 'SYSTEM', 'DEBUG'],
+            trending: [
+                { title: 'Check Network Connection', location: 'System', url: '#' },
+                { title: 'View Browser Console', location: 'Debug', url: '#' },
+                { title: 'Auto-retry in Progress', location: 'System', url: '#' }
+            ],
+            isRealTime: true,
+            isLiveTab: true,
+            isEventTab: true,
+            category: 'error',
+            isLoading: false,
+            lastUpdated: new Date()
+        };
 
-        articles.forEach(article => {
-            const text = (article.title + ' ' + article.description).toLowerCase();
-            keywords.forEach(keyword => {
-                if (text.includes(keyword.toLowerCase())) {
-                    topicCount[keyword] = (topicCount[keyword] || 0) + 1;
-                }
-            });
-        });
+        this.eventProfiles.set('error', errorProfile);
+    }
 
-        return Object.entries(topicCount)
-            .sort(([,a], [,b]) => b - a)
-            .slice(0, 3)
-            .map(([topic,]) => topic);
+    async refreshEventTabs() {
+        try {
+            console.log('🔄 Refreshing event tabs...');
+
+            // Clear existing event profiles
+            this.eventProfiles.clear();
+
+            // Recreate tabs with fresh data
+            await this.fetchAndCreateEventTabs();
+
+            console.log('✅ Event tabs refreshed');
+
+        } catch (error) {
+            console.error('❌ Error refreshing event tabs:', error);
+            this.createErrorTab();
+            this.notifyDashboardUpdate('refresh-error');
+        }
+    }
+
+    saveEventData(eventId, profile, article) {
+        const saveData = {
+            profile: profile,
+            article: article,
+            timestamp: Date.now(),
+            eventId: eventId
+        };
+
+        // Save to localStorage for auto-save functionality
+        try {
+            localStorage.setItem(`event_tab_${eventId}`, JSON.stringify(saveData));
+            this.savedProfiles.set(eventId, saveData);
+            console.log(`💾 Auto-saved event tab: ${profile.name}`);
+        } catch (error) {
+            console.error(`❌ Error saving event ${eventId} data:`, error);
+        }
+    }
+
+    loadSavedEventData(eventId) {
+        try {
+            const saved = localStorage.getItem(`event_tab_${eventId}`);
+            if (saved) {
+                const data = JSON.parse(saved);
+                this.savedProfiles.set(eventId, data);
+                return data;
+            }
+        } catch (error) {
+            console.error(`❌ Error loading saved event ${eventId} data:`, error);
+        }
+        return null;
     }
 
     async getDefaultBackgroundForCategory(categoryKey) {
@@ -241,106 +364,68 @@ class LiveTabsManager {
             'music': 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1920&h=1080&fit=crop&q=80',
             'design': 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1920&h=1080&fit=crop&q=80',
             'art': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop&q=80',
-            'social-trends': 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1920&h=1080&fit=crop&q=80'
+            'social-trends': 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1920&h=1080&fit=crop&q=80',
+            'entertainment': 'https://images.unsplash.com/photo-1489599126688-3704b6d13de7?w=1920&h=1080&fit=crop&q=80',
+            'campaigns': 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1920&h=1080&fit=crop&q=80',
+            'games': 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1920&h=1080&fit=crop&q=80',
+            'trends': 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1920&h=1080&fit=crop&q=80'
         };
 
         return defaultBackgrounds[categoryKey] || defaultBackgrounds['trending'];
     }
 
-    saveProfileData(categoryKey, profile, articles) {
-        const saveData = {
-            profile: profile,
-            articles: articles,
-            timestamp: Date.now(),
-            category: categoryKey
-        };
-
-        // Save to localStorage for auto-save functionality
-        try {
-            localStorage.setItem(`live_tab_${categoryKey}`, JSON.stringify(saveData));
-            this.savedProfiles.set(categoryKey, saveData);
-            console.log(`💾 Auto-saved ${categoryKey} tab data (${articles.length} articles)`);
-        } catch (error) {
-            console.error(`❌ Error saving ${categoryKey} data:`, error);
-        }
+    getAllEventProfiles() {
+        return Array.from(this.eventProfiles.values());
     }
 
-    loadSavedProfileData(categoryKey) {
-        try {
-            const saved = localStorage.getItem(`live_tab_${categoryKey}`);
-            if (saved) {
-                const data = JSON.parse(saved);
-                this.savedProfiles.set(categoryKey, data);
-                return data;
-            }
-        } catch (error) {
-            console.error(`❌ Error loading saved ${categoryKey} data:`, error);
-        }
-        return null;
-    }
-
-    getAllLiveProfiles() {
-        return Array.from(this.liveProfiles.values());
-    }
-
-    getLiveProfile(categoryKey) {
-        return this.liveProfiles.get(categoryKey);
+    getEventProfile(eventId) {
+        return this.eventProfiles.get(eventId);
     }
 
     startLiveUpdates() {
-        // Update each category at different intervals to spread load
-        Object.keys(this.liveCategories).forEach((categoryKey, index) => {
-            // Stagger initial updates
-            setTimeout(() => {
-                this.updateCategoryProfile(categoryKey);
+        // Refresh event tabs every 20 minutes
+        this.updateInterval = setInterval(() => {
+            this.refreshEventTabs();
+        }, 20 * 60 * 1000);
 
-                // Set recurring updates every 10-20 minutes (staggered)
-                const interval = setInterval(() => {
-                    this.updateCategoryProfile(categoryKey);
-                }, (10 + index * 2) * 60 * 1000);
-
-                this.updateIntervals.set(categoryKey, interval);
-            }, index * 5000); // 5 second stagger
-        });
-
-        console.log(`🔄 Started live updates for ${Object.keys(this.liveCategories).length} categories`);
+        console.log('🔄 Started live updates for event tabs (20 min intervals)');
     }
 
     stopLiveUpdates() {
-        this.updateIntervals.forEach((interval, categoryKey) => {
-            clearInterval(interval);
-            console.log(`⏹️ Stopped updates for ${categoryKey}`);
-        });
-        this.updateIntervals.clear();
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval);
+            this.updateInterval = null;
+            console.log('⏹️ Stopped event tab updates');
+        }
     }
 
-    notifyDashboardUpdate(categoryKey) {
-        // Notify dashboard controller that a live tab has been updated
-        if (this.dashboardController && this.dashboardController.onLiveTabUpdated) {
-            this.dashboardController.onLiveTabUpdated(categoryKey, this.liveProfiles.get(categoryKey));
+    notifyDashboardUpdate(updateType) {
+        // Notify dashboard controller that event tabs have been updated
+        if (this.dashboardController && this.dashboardController.onEventTabsUpdated) {
+            this.dashboardController.onEventTabsUpdated(updateType, this.getAllEventProfiles());
         }
     }
 
     // Export saved data for potential backend integration
     exportSavedData() {
         const exportData = {};
-        this.savedProfiles.forEach((data, categoryKey) => {
-            exportData[categoryKey] = data;
+        this.savedProfiles.forEach((data, eventId) => {
+            exportData[eventId] = data;
         });
 
-        console.log('📤 Exported saved data:', exportData);
+        console.log('📤 Exported saved event data:', exportData);
         return exportData;
     }
 
     // Import data (for potential backend integration)
     importSavedData(importData) {
-        Object.entries(importData).forEach(([categoryKey, data]) => {
-            this.savedProfiles.set(categoryKey, data);
+        Object.entries(importData).forEach(([eventId, data]) => {
+            this.savedProfiles.set(eventId, data);
             if (data.profile) {
-                this.liveProfiles.set(categoryKey, data.profile);
+                this.eventProfiles.set(eventId, data.profile);
             }
         });
 
-        console.log('📥 Imported saved data for', Object.keys(importData).length, 'categories');
+        console.log('📥 Imported saved data for', Object.keys(importData).length, 'events');
     }
 }
