@@ -4,193 +4,65 @@ class DashboardController {
         this.isTransitioning = false;
         this.dynamicProfileGenerator = new DynamicProfileGenerator();
         this.carouselManager = new CarouselManager(this);
+        this.liveTabsManager = new LiveTabsManager(this);
         this.allProfiles = [...artistProfiles]; // Start with static profiles
         this.realTimeUpdateInterval = null;
         this.init();
     }
 
     async init() {
-        // Always create initial trending profile first
-        this.createInitialTrendingProfile();
+        // Initialize live tabs first
+        await this.liveTabsManager.initializeLiveTabs();
+
+        // Add live profiles to the beginning of all profiles
+        const liveProfiles = this.liveTabsManager.getAllLiveProfiles();
+        this.allProfiles = [...liveProfiles, ...artistProfiles];
+
         this.createProfileNavigation();
         this.setupEventListeners();
         this.updateProfile(0, false);
         this.startAutoRotation();
-        
-        // Load real-time content in background
-        this.loadRealTimeProfiles();
-        this.startRealTimeUpdates();
     }
 
-    createInitialTrendingProfile() {
-        // Always ensure there's a trending profile at position 0
-        const initialTrendingProfile = {
-            id: `trending-initial-${Date.now()}`,
-            name: 'TRENDING NOW',
-            subtitle: 'REAL-TIME INSIGHTS',
-            year: 'LIVE UPDATING',
-            description: 'Loading the latest trends from fashion, tech, and culture. Real-time content updating...',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-            backgroundImage: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1920&h=1080&fit=crop&q=80', // HD quality
-            artistPhoto: '',
-            social: {
-                handle: '@trendspotting',
-                url: '#'
-            },
-            isCurrentlyTrending: true,
-            metrics: {
-                status: 'LOADING',
-                updated: 'LIVE',
-                sources: 'MULTIPLE'
-            },
-            tags: ['TRENDING NOW', 'REAL-TIME UPDATING', 'LIVE FEED'],
-            trending: [
-                { title: 'Fetching Latest Trends...', location: 'RSS Feeds', url: '#' },
-                { title: 'Analyzing Content...', location: 'Multiple Sources', url: '#' },
-                { title: 'Updating Feed...', location: 'Live Data', url: '#' }
-            ],
-            isRealTime: true,
-            isLoading: true,
-            lastUpdated: new Date()
-        };
+    onLiveTabUpdated(categoryKey, updatedProfile) {
+        // Callback for when a live tab gets updated
+        const profileIndex = this.allProfiles.findIndex(p =>
+            p.isLiveTab && p.category === categoryKey
+        );
 
-        // Remove any existing real-time profiles and add the initial one
-        this.allProfiles = this.allProfiles.filter(p => !p.isRealTime);
-        this.allProfiles.unshift(initialTrendingProfile);
-    }
+        if (profileIndex !== -1) {
+            this.allProfiles[profileIndex] = updatedProfile;
 
-    async loadRealTimeProfiles() {
-        try {
-            console.log('Loading real-time profiles...');
-            const articles = await this.dynamicProfileGenerator.rssParser.getAllRelevantArticles();
-            
-            console.log('Found articles:', articles.length);
-            if (articles.length > 0) {
-                console.log('Sample articles with dates and images:');
-                articles.slice(0, 3).forEach(article => {
-                    const imageStatus = article.imageUrl ? '🖼️' : '📝';
-                    console.log(`${imageStatus} ${article.title} (${article.pubDate.toISOString()}) from ${article.source}`);
-                    if (article.imageUrl) {
-                        console.log(`   Image: ${article.imageUrl}`);
-                    }
-                });
-                
-                const realTimeProfile = await this.dynamicProfileGenerator.generateProfileFromArticles(articles);
-                
-                if (realTimeProfile) {
-                    // Remove any existing real-time profiles
-                    this.allProfiles = this.allProfiles.filter(p => !p.isRealTime);
-                    
-                    // Add new real-time profile at the beginning
-                    this.allProfiles.unshift(realTimeProfile);
-                    
-                    // Update navigation
-                    this.createProfileNavigation();
-                    
-                    console.log(`✅ Added real-time profile: ${realTimeProfile.name}`);
-                    console.log(`Based on ${articles.length} articles from ${new Set(articles.map(a => a.source)).size} sources`);
-                }
-            } else {
-                console.log('❌ No relevant articles found. Creating fallback profile...');
-                
-                // Create a fallback real-time profile even if no articles found
-                const fallbackProfile = {
-                    id: `trending-fallback-${Date.now()}`,
-                    name: 'TRENDING NOW',
-                    subtitle: 'REAL-TIME INSIGHTS',
-                    year: 'LIVE FEED',
-                    description: 'Currently updating with the latest trends from fashion, tech, and culture. New content loading...',
-                    background: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 50%, #ff6b35 100%)',
-                    backgroundImage: '',
-                    artistPhoto: '',
-                    social: {
-                        handle: '@trendspotting',
-                        url: '#'
-                    },
-                    isCurrentlyTrending: true,
-                    metrics: {
-                        status: 'LOADING',
-                        updated: 'LIVE',
-                        sources: 'Multiple'
-                    },
-                    tags: ['TRENDING', 'REAL-TIME', 'LOADING'],
-                    trending: [
-                        { title: 'Content Loading...', location: 'Multiple Sources', url: '#' },
-                        { title: 'Fetching Latest Trends...', location: 'RSS Feeds', url: '#' },
-                        { title: 'Real-time Updates Coming...', location: 'Live Data', url: '#' }
-                    ],
-                    isRealTime: true,
-                    lastUpdated: new Date()
-                };
-                
-                // Remove any existing real-time profiles
-                this.allProfiles = this.allProfiles.filter(p => !p.isRealTime);
-                
-                // Add fallback profile
-                this.allProfiles.unshift(fallbackProfile);
-                
-                // Update navigation
-                this.createProfileNavigation();
-                
-                console.log('📱 Added fallback real-time profile');
-                
-                // Debug: check individual feeds
-                for (const feedConfig of RSS_FEEDS) {
-                    try {
-                        const feedArticles = await this.dynamicProfileGenerator.rssParser.fetchFeed(feedConfig);
-                        console.log(`${feedConfig.name}: ${feedArticles.length} relevant articles`);
-                    } catch (feedError) {
-                        console.error(`❌ Error fetching ${feedConfig.name}:`, feedError);
-                    }
-                }
+            // If this is the currently displayed profile, update the view
+            if (profileIndex === this.currentProfileIndex) {
+                this.updateContent(updatedProfile);
             }
-        } catch (error) {
-            console.error('❌ Error loading real-time profiles:', error);
-            
-            // Always ensure there's a live profile, even on error
-            if (!this.allProfiles.some(p => p.isRealTime)) {
-                const errorProfile = {
-                    id: `trending-error-${Date.now()}`,
-                    name: 'TRENDING SYSTEM',
-                    subtitle: 'REAL-TIME INSIGHTS',
-                    year: 'LIVE FEED',
-                    description: 'Real-time content system is initializing. Check console for debug information.',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-                    backgroundImage: '',
-                    artistPhoto: '',
-                    social: {
-                        handle: '@trendspotting',
-                        url: '#'
-                    },
-                    isCurrentlyTrending: true,
-                    metrics: {
-                        status: 'ERROR',
-                        updated: 'LIVE',
-                        sources: 'Debug'
-                    },
-                    tags: ['SYSTEM', 'DEBUG', 'LIVE'],
-                    trending: [
-                        { title: 'System Status: Debugging', location: 'Console', url: '#' },
-                        { title: 'Check Browser Console', location: 'Developer Tools', url: '#' },
-                        { title: 'RSS Feed Diagnostics', location: 'Network Tab', url: '#' }
-                    ],
-                    isRealTime: true,
-                    lastUpdated: new Date()
-                };
-                
-                this.allProfiles = this.allProfiles.filter(p => !p.isRealTime);
-                this.allProfiles.unshift(errorProfile);
-                this.createProfileNavigation();
+
+            // Update navigation to reflect changes
+            this.updateNavigationCard(profileIndex, updatedProfile);
+
+            console.log(`🔄 Updated live tab: ${updatedProfile.name}`);
+        }
+    }
+
+    updateNavigationCard(index, profile) {
+        const artistCard = document.querySelector(`.artist-card[data-index="${index}"]`);
+        if (artistCard) {
+            const nameElement = artistCard.querySelector('.artist-name');
+            const domainElement = artistCard.querySelector('.artist-domain');
+
+            if (nameElement) nameElement.textContent = profile.name;
+            if (domainElement) domainElement.textContent = profile.tags[0];
+
+            // Update loading state
+            if (profile.isLoading) {
+                artistCard.classList.add('loading');
+            } else {
+                artistCard.classList.remove('loading');
             }
         }
     }
 
-    startRealTimeUpdates() {
-        // Update real-time content every 15 minutes
-        this.realTimeUpdateInterval = setInterval(() => {
-            this.loadRealTimeProfiles();
-        }, 15 * 60 * 1000);
-    }
 
     createProfileNavigation() {
         const artistNavigation = document.querySelector('.artist-navigation');
@@ -200,12 +72,13 @@ class DashboardController {
                 <div class="artist-carousel">
                     <div class="artist-list">
                         ${this.allProfiles.map((profile, index) => `
-                            <button class="artist-card ${index === 0 ? 'active' : ''} ${profile.isRealTime ? 'real-time-profile' : ''}" 
+                            <button class="artist-card ${index === 0 ? 'active' : ''} ${profile.isLiveTab ? 'live-tab-profile' : ''} ${profile.isLoading ? 'loading' : ''}"
                                     data-index="${index}">
                                 <div class="artist-name">${profile.name}</div>
                                 <div class="artist-domain">${profile.tags[0]}</div>
                                 ${profile.isCurrentlyTrending ? '<div class="mini-trending">●</div>' : ''}
-                                ${profile.isRealTime ? '<div class="live-indicator">LIVE</div>' : ''}
+                                ${profile.isLiveTab ? '<div class="live-indicator">LIVE</div>' : ''}
+                                ${profile.isLoading ? '<div class="loading-indicator">⟳</div>' : ''}
                             </button>
                         `).join('')}
                     </div>
@@ -213,12 +86,12 @@ class DashboardController {
                 <button class="carousel-nav next" aria-label="Next profiles">›</button>
             </div>
         `;
-        
+
         // Re-attach event listeners for artist cards
         document.querySelectorAll('.artist-card').forEach((btn, index) => {
             btn.addEventListener('click', () => this.switchToProfile(index));
         });
-        
+
         // Setup carousel navigation
         this.carouselManager.setup();
     }

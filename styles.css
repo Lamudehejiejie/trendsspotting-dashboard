@@ -5,10 +5,16 @@
     box-sizing: border-box;
 }
 
-/* Real-time Profile Styles */
-.real-time-profile {
+/* Live Tab Profile Styles */
+.live-tab-profile {
     border: 1px solid #00ff88 !important;
     box-shadow: 0 0 10px rgba(0, 255, 136, 0.3) !important;
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 123, 255, 0.1)) !important;
+}
+
+.live-tab-profile.loading {
+    border-color: #ffa502 !important;
+    box-shadow: 0 0 10px rgba(255, 165, 2, 0.3) !important;
 }
 
 .live-indicator {
@@ -22,6 +28,24 @@
     border-radius: 2px;
     font-weight: 700;
     animation: pulse-live 2s infinite;
+}
+
+.loading-indicator {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: #ffa502;
+    color: white;
+    font-size: 8px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    font-weight: 700;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 @keyframes pulse-live {

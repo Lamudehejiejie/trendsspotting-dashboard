@@ -553,14 +553,44 @@ class RSSFeedParser {
 
     async getAllRelevantArticles() {
         const allArticles = [];
-        
+
         for (const feedConfig of RSS_FEEDS) {
             const articles = await this.fetchFeed(feedConfig);
             allArticles.push(...articles);
         }
-        
+
         return allArticles
             .sort((a, b) => b.pubDate - a.pubDate)
             .slice(0, 20); // Top 20 most recent relevant articles
+    }
+
+    async getArticlesByCategory(category) {
+        const categoryArticles = [];
+
+        const categoryFeeds = RSS_FEEDS.filter(feed =>
+            feed.category === category ||
+            feed.category.includes(category) ||
+            (category === 'social-trends' && feed.category === 'social-trends') ||
+            (category === 'campaigns' && feed.category === 'campaigns') ||
+            (category === 'games' && feed.category === 'games') ||
+            (category === 'trends' && feed.category === 'trends')
+        );
+
+        for (const feedConfig of categoryFeeds) {
+            const articles = await this.fetchFeed(feedConfig);
+            categoryArticles.push(...articles);
+        }
+
+        return categoryArticles
+            .sort((a, b) => b.pubDate - a.pubDate)
+            .slice(0, 15); // Top 15 most recent articles for each category
+    }
+
+    getAvailableCategories() {
+        const categories = new Set();
+        RSS_FEEDS.forEach(feed => {
+            categories.add(feed.category);
+        });
+        return Array.from(categories);
     }
 }
