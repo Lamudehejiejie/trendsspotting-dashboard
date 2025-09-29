@@ -59,7 +59,285 @@ const RSS_FEEDS = [
         url: 'https://www.thefader.com/rss',
         category: 'music',
         proxy: 'https://api.allorigins.win/get?url='
-    }
+    },
+    {
+        name: 'Chizaizukan',
+        url: 'https://chizaizukan.com/news/',
+        category: 'tech',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Newspicks',
+        url: 'https://newspicks.com/theme-news/technology/',
+        category: 'tech',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Lumen Prize',
+        url: 'https://lumenprize.org/',
+        category: 'art',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'ARs Electronica',
+        url: 'https://ars.electronica.art/news/en/',
+        category: 'art',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Designboom',
+        url: 'https://www.designboom.com/web/rss/',
+        category: 'design',
+        proxy: 'https://api.allorigins.win/get?url='
+        },
+    // FASHION
+    {
+        name: 'Vogue',
+        url: 'https://www.vogue.com/feed/rss',
+        category: 'fashion',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Hypebeast',
+        url: 'https://hypebeast.com/feed',
+        category: 'fashion',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'WWD (Women\'s Wear Daily)',
+        url: 'https://wwd.com/feed/',
+        category: 'fashion',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Business of Fashion',
+        url: 'https://www.businessoffashion.com/feed/',
+        category: 'fashion',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'The Cut',
+        url: 'https://www.thecut.com/feed/',
+        category: 'fashion',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Who What Wear',
+        url: 'https://www.whowhatwear.com/rss',
+        category: 'fashion',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+
+    // CREATIVE/DESIGN
+    {
+        name: 'Designboom',
+        url: 'https://www.designboom.com/feed/',
+        category: 'design',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Dezeen',
+        url: 'https://www.dezeen.com/feed/',
+        category: 'design',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Creative Bloq',
+        url: 'https://www.creativebloq.com/feed',
+        category: 'design',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'It\'s Nice That',
+        url: 'https://www.itsnicethat.com/feed',
+        category: 'design',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Colossal',
+        url: 'https://www.thisiscolossal.com/feed/',
+        category: 'art',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+
+    // ENTERTAINMENT/CULTURE
+    {
+        name: 'Variety',
+        url: 'https://variety.com/feed/',
+        category: 'entertainment',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'The Hollywood Reporter',
+        url: 'https://www.hollywoodreporter.com/feed/',
+        category: 'entertainment',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Deadline',
+        url: 'https://deadline.com/feed/',
+        category: 'entertainment',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+
+    // MUSIC FESTIVALS
+    {
+        name: 'Pitchfork',
+        url: 'https://pitchfork.com/rss/',
+        category: 'music',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Consequence',
+        url: 'https://consequence.net/feed/',
+        category: 'music',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'NME',
+        url: 'https://www.nme.com/feed',
+        category: 'music',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Stereogum',
+        url: 'https://www.stereogum.com/feed/',
+        category: 'music',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+
+    // SOCIAL MEDIA TRENDS
+    {
+        name: 'Social Media Today',
+        url: 'https://www.socialmediatoday.com/rss.xml',
+        category: 'social-trends',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Later Blog (Instagram/TikTok trends)',
+        url: 'https://later.com/blog/feed/',
+        category: 'social-trends',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Hootsuite Blog',
+        url: 'https://blog.hootsuite.com/feed/',
+        category: 'social-trends',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+
+    // TECH/CAMPAIGNS
+    {
+        name: 'The Verge',
+        url: 'https://www.theverge.com/rss/index.xml',
+        category: 'tech',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'TechCrunch',
+        url: 'https://techcrunch.com/feed/',
+        category: 'tech',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Adweek',
+        url: 'https://www.adweek.com/feed/',
+        category: 'campaigns',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Campaign',
+        url: 'https://www.campaignlive.com/feed',
+        category: 'campaigns',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Ads of the World',
+        url: 'https://www.adsoftheworld.com/feed',
+        category: 'campaigns',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+
+    // GAMING
+    {
+        name: 'IGN',
+        url: 'https://www.ign.com/feed.xml',
+        category: 'games',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Polygon',
+        url: 'https://www.polygon.com/rss/index.xml',
+        category: 'games',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Kotaku',
+        url: 'https://kotaku.com/feed',
+        category: 'games',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Game Informer',
+        url: 'https://www.gameinformer.com/feeds/thefeed.aspx',
+        category: 'games',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Eurogamer',
+        url: 'https://www.eurogamer.net/?format=rss',
+        category: 'games',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+
+    // YEAR WRAP-UP/TRENDS
+    {
+        name: 'Trend Hunter',
+        url: 'https://www.trendhunter.com/rss',
+        category: 'trends',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'WGSN Insider',
+        url: 'https://www.wgsn.com/blogs/feed/',
+        category: 'trends',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+
+    // REGIONAL - ASIA
+    {
+        name: 'Vogue Japan',
+        url: 'https://www.vogue.co.jp/feed',
+        category: 'fashion-asia',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Hypebeast Japan',
+        url: 'https://hypebeast.com/jp/feed',
+        category: 'fashion-asia',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+
+    // REGIONAL - EUROPE
+    {
+        name: 'Vogue UK',
+        url: 'https://www.vogue.co.uk/feed/rss',
+        category: 'fashion-europe',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'i-D Magazine',
+        url: 'https://i-d.vice.com/en/feed',
+        category: 'fashion-europe',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+    {
+        name: 'Dazed',
+        url: 'https://www.dazeddigital.com/rss',
+        category: 'fashion-europe',
+        proxy: 'https://api.allorigins.win/get?url='
+    },
+
 ];
 
 // Subculture Keywords for Content Filtering
