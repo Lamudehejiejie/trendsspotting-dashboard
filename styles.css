@@ -120,73 +120,6 @@
     50% { opacity: 1; }
 }
 
-/* Brightness-based text color adjustments */
-.bright-background .main-title {
-    background: linear-gradient(135deg, #000 0%, #333 100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
-    text-shadow: 1px 1px 4px rgba(255, 255, 255, 0.7), 0 0 10px rgba(255, 255, 255, 0.5) !important;
-    filter: drop-shadow(1px 1px 2px rgba(255, 255, 255, 0.8)) !important;
-}
-
-.dark-background .main-title {
-    background: linear-gradient(135deg, #fff 0%, #ccc 100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 0, 0, 0.5) !important;
-    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.8)) !important;
-}
-
-.bright-background .description-text {
-    color: rgba(0, 0, 0, 0.8) !important;
-    text-shadow: 1px 1px 4px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.6) !important;
-    filter: drop-shadow(1px 1px 2px rgba(255, 255, 255, 0.9)) !important;
-}
-
-.dark-background .description-text {
-    color: rgba(255, 255, 255, 0.8) !important;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.6) !important;
-    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.9)) !important;
-}
-
-.bright-background .title-subtitle {
-    color: rgba(0, 0, 0, 0.7) !important;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
-}
-
-.dark-background .title-subtitle {
-    color: rgba(255, 255, 255, 0.7) !important;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
-}
-
-.bright-background .metric-value {
-    color: rgba(0, 0, 0, 0.9) !important;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
-}
-
-.dark-background .metric-value {
-    color: rgba(255, 255, 255, 0.9) !important;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
-}
-
-.bright-background .metric-label {
-    color: rgba(0, 0, 0, 0.6) !important;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
-}
-
-.dark-background .metric-label {
-    color: rgba(255, 255, 255, 0.6) !important;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
-}
-
-/* Keep trending badge and title highlight unchanged - they should always be visible */
-.trending-badge,
-.title-highlight {
-    /* These keep their original gradient colors regardless of background */
-}
-
 body {
     font-family: 'Inter', sans-serif;
     background: #000;
@@ -473,8 +406,7 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 0, 0, 0.5);
-    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.8));
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .event-source {
@@ -492,31 +424,6 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    display: block;
-    max-width: 100%;
-    line-height: 1.1;
-    word-wrap: break-word;
-    hyphens: auto;
-    transition: font-size 0.3s ease;
-}
-
-/* Adaptive font sizes for different text lengths */
-.title-highlight.short-text {
-    font-size: 1em; /* Normal size for short titles */
-}
-
-.title-highlight.medium-text {
-    font-size: 0.85em; /* Slightly smaller for medium titles */
-}
-
-.title-highlight.long-text {
-    font-size: 0.7em; /* Much smaller for long titles */
-    line-height: 1.2;
-}
-
-.title-highlight.very-long-text {
-    font-size: 0.6em; /* Smallest for very long titles */
-    line-height: 1.3;
 }
 
 .trending-badge {
@@ -589,8 +496,7 @@ body {
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.8);
     max-width: 600px;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.6);
-    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.9));
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .metrics {
