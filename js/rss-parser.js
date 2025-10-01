@@ -302,36 +302,76 @@ const RSS_FEEDS = [
         priority: 'medium'
     },
 
-    // Japanese & Asian Sources
+    // Japanese & Asian Sources (High Priority for Tab Placement)
+    {
+        name: 'Sabukaru',
+        url: 'https://sabukaru.online/feed/',
+        category: 'fashion-asia',
+        priority: 'ultra-high',
+        isJapanese: true
+    },
     {
         name: 'Vogue Japan',
         url: 'https://www.vogue.co.jp/feed',
         category: 'fashion-asia',
-        priority: 'high'
+        priority: 'ultra-high',
+        isJapanese: true
     },
     {
         name: 'Hypebeast Japan',
         url: 'https://hypebeast.com/jp/feed',
         category: 'fashion-asia',
-        priority: 'medium'
-    },
-    {
-        name: 'Dezeen Japan Content',
-        url: 'https://www.dezeen.com/tag/japan/feed/',
-        category: 'design-asia',
-        priority: 'medium'
-    },
-    {
-        name: 'Tokyo Art Beat',
-        url: 'https://www.tokyoartbeat.com/en/rss/exhibition.xml',
-        category: 'art-asia',
-        priority: 'medium'
+        priority: 'ultra-high',
+        isJapanese: true
     },
     {
         name: 'Spoon & Tamago',
         url: 'https://www.spoon-tamago.com/feed/',
         category: 'design-asia',
-        priority: 'high'
+        priority: 'ultra-high',
+        isJapanese: true
+    },
+    {
+        name: 'Tokyo Art Beat',
+        url: 'https://www.tokyoartbeat.com/en/rss/exhibition.xml',
+        category: 'art-asia',
+        priority: 'high',
+        isJapanese: true
+    },
+    {
+        name: 'BEAMS Magazine',
+        url: 'https://www.beams.co.jp/blog/feed/',
+        category: 'fashion-asia',
+        priority: 'high',
+        isJapanese: true
+    },
+    {
+        name: 'Dezeen Japan Content',
+        url: 'https://www.dezeen.com/tag/japan/feed/',
+        category: 'design-asia',
+        priority: 'high',
+        isJapanese: true
+    },
+    {
+        name: 'Casa Brutus',
+        url: 'https://casabrutus.com/feed/',
+        category: 'design-asia',
+        priority: 'high',
+        isJapanese: true
+    },
+    {
+        name: 'Pen Magazine',
+        url: 'https://www.pen-online.com/feed/',
+        category: 'culture-asia',
+        priority: 'high',
+        isJapanese: true
+    },
+    {
+        name: 'WWD Japan',
+        url: 'https://www.wwdjapan.com/feed',
+        category: 'fashion-asia',
+        priority: 'high',
+        isJapanese: true
     },
 
     // Additional International Sources
@@ -796,18 +836,39 @@ class RSSFeedParser {
         return text.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, '').trim();
     }
 
-    // Enhanced method with priority-based feed selection
+    // Enhanced method with Japanese priority and feed selection
     async getAllRelevantArticles() {
         const allArticles = [];
 
-        // Prioritize feeds based on health and priority
+        // Prioritize feeds based on health and priority (Japanese sources first)
         const prioritizedFeeds = this.getPrioritizedFeeds();
 
-        console.log(`📡 Fetching from ${prioritizedFeeds.length} prioritized feeds...`);
+        console.log(`📡 Fetching from ${prioritizedFeeds.length} prioritized feeds (Japanese sources prioritized)...`);
 
-        // Process high priority feeds first
+        // Process feeds in priority order: ultra-high (Japanese) -> high -> medium
+        const ultraHighPriorityFeeds = prioritizedFeeds.filter(feed => feed.priority === 'ultra-high');
         const highPriorityFeeds = prioritizedFeeds.filter(feed => feed.priority === 'high');
         const mediumPriorityFeeds = prioritizedFeeds.filter(feed => feed.priority === 'medium');
+
+        console.log(`🌸 Processing ${ultraHighPriorityFeeds.length} ultra-high priority (Japanese) feeds first...`);
+
+        // Fetch ultra-high priority feeds (Japanese sources) first
+        const ultraHighPromises = ultraHighPriorityFeeds.map(feed => this.fetchFeed(feed));
+        const ultraHighResults = await Promise.allSettled(ultraHighPromises);
+
+        ultraHighResults.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+                // Mark Japanese articles for priority sorting
+                const articles = result.value.map(article => ({
+                    ...article,
+                    isJapanese: ultraHighPriorityFeeds[index].isJapanese || false,
+                    sourcePriority: 'ultra-high'
+                }));
+                allArticles.push(...articles);
+            } else {
+                console.warn(`❌ Ultra-high priority feed failed: ${ultraHighPriorityFeeds[index].name}`);
+            }
+        });
 
         // Fetch high priority feeds in parallel
         const highPriorityPromises = highPriorityFeeds.map(feed => this.fetchFeed(feed));
@@ -815,7 +876,12 @@ class RSSFeedParser {
 
         highPriorityResults.forEach((result, index) => {
             if (result.status === 'fulfilled') {
-                allArticles.push(...result.value);
+                const articles = result.value.map(article => ({
+                    ...article,
+                    isJapanese: highPriorityFeeds[index].isJapanese || false,
+                    sourcePriority: 'high'
+                }));
+                allArticles.push(...articles);
             } else {
                 console.warn(`❌ High priority feed failed: ${highPriorityFeeds[index].name}`);
             }
@@ -828,17 +894,38 @@ class RSSFeedParser {
 
             mediumPriorityResults.forEach((result, index) => {
                 if (result.status === 'fulfilled') {
-                    allArticles.push(...result.value);
+                    const articles = result.value.map(article => ({
+                        ...article,
+                        isJapanese: mediumPriorityFeeds[index].isJapanese || false,
+                        sourcePriority: 'medium'
+                    }));
+                    allArticles.push(...articles);
                 } else {
                     console.warn(`❌ Medium priority feed failed: ${mediumPriorityFeeds[index].name}`);
                 }
             });
         }
 
+        // Enhanced sorting: Japanese content first, then by relevance and recency
         return allArticles
-            .sort((a, b) => b.relevanceScore - a.relevanceScore) // Sort by relevance first
-            .sort((a, b) => b.pubDate - a.pubDate) // Then by recency
-            .slice(0, 25); // Increased to top 25 articles
+            .sort((a, b) => {
+                // First priority: Japanese content
+                if (a.isJapanese && !b.isJapanese) return -1;
+                if (!a.isJapanese && b.isJapanese) return 1;
+
+                // Second priority: Source priority
+                const priorityOrder = { 'ultra-high': 4, 'high': 3, 'medium': 2, 'low': 1 };
+                const aPriority = priorityOrder[a.sourcePriority] || 1;
+                const bPriority = priorityOrder[b.sourcePriority] || 1;
+                if (aPriority !== bPriority) return bPriority - aPriority;
+
+                // Third priority: Relevance score
+                if (a.relevanceScore !== b.relevanceScore) return b.relevanceScore - a.relevanceScore;
+
+                // Fourth priority: Recency
+                return b.pubDate - a.pubDate;
+            })
+            .slice(0, 30); // Increased to top 30 articles for more Japanese content
     }
 
     // Enhanced category-based fetching with health awareness
@@ -886,7 +973,7 @@ class RSSFeedParser {
             .slice(0, 20); // Top 20 articles per category
     }
 
-    // Get prioritized feeds based on health and priority
+    // Get prioritized feeds based on health and priority (Japanese sources prioritized)
     getPrioritizedFeeds() {
         return RSS_FEEDS
             .filter(feed => {
@@ -895,8 +982,12 @@ class RSSFeedParser {
                 return !health || health.status !== 'unhealthy';
             })
             .sort((a, b) => {
-                // Sort by priority first
-                const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
+                // First priority: Japanese sources
+                if (a.isJapanese && !b.isJapanese) return -1;
+                if (!a.isJapanese && b.isJapanese) return 1;
+
+                // Second priority: Feed priority level
+                const priorityOrder = { 'ultra-high': 4, 'high': 3, 'medium': 2, 'low': 1 };
                 const aPriority = priorityOrder[a.priority] || 1;
                 const bPriority = priorityOrder[b.priority] || 1;
 
@@ -904,7 +995,7 @@ class RSSFeedParser {
                     return bPriority - aPriority;
                 }
 
-                // Then by health status
+                // Third priority: Health status
                 const aHealth = this.feedHealthStatus.get(a.url);
                 const bHealth = this.feedHealthStatus.get(b.url);
                 const healthOrder = { 'healthy': 3, 'degraded': 2, 'unknown': 1, 'unhealthy': 0 };

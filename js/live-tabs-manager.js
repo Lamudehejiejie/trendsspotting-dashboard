@@ -30,9 +30,13 @@ class LiveTabsManager {
         this.categoryIcons = {
             'tech': '💻',
             'fashion': '👗',
+            'fashion-asia': '🌸',
             'music': '🎵',
             'design': '🎨',
+            'design-asia': '🏮',
             'art': '🖼️',
+            'art-asia': '🎌',
+            'culture-asia': '🌸',
             'social-trends': '📱',
             'entertainment': '🎬',
             'campaigns': '📢',
@@ -105,17 +109,28 @@ class LiveTabsManager {
                 // Remove loading tab
                 this.eventProfiles.delete('loading');
 
-                // Create individual tabs for top trending events
+                // Create individual tabs for top trending events (Japanese content prioritized)
                 const topEvents = allArticles
-                    .sort((a, b) => b.relevanceScore - a.relevanceScore) // Sort by relevance
+                    .sort((a, b) => {
+                        // Prioritize Japanese content first
+                        if (a.isJapanese && !b.isJapanese) return -1;
+                        if (!a.isJapanese && b.isJapanese) return 1;
+
+                        // Then by relevance score
+                        return b.relevanceScore - a.relevanceScore;
+                    })
                     .slice(0, this.maxEventTabs); // Limit number of tabs
+
+                // Count Japanese content
+                const japaneseCount = topEvents.filter(event => event.isJapanese).length;
+                console.log(`🌸 Japanese content prioritized: ${japaneseCount}/${topEvents.length} tabs`);
 
                 for (let i = 0; i < topEvents.length; i++) {
                     const article = topEvents[i];
                     await this.createEventTab(article, i);
                 }
 
-                console.log(`🎯 Created ${topEvents.length} event tabs`);
+                console.log(`🎯 Created ${topEvents.length} event tabs (${japaneseCount} Japanese-prioritized)`);
 
                 // Notify dashboard to refresh navigation
                 this.notifyDashboardUpdate('events-created');
@@ -141,16 +156,20 @@ class LiveTabsManager {
             article.title.substring(0, 40) + '...' :
             article.title;
 
-        // Get category info for styling
+        // Get category info for styling with Japanese priority
         const categoryColor = this.categoryColors[article.category] || this.categoryColors.default;
         const categoryIcon = this.categoryIcons[article.category] || this.categoryIcons.default;
+
+        // Add Japanese indicator
+        const japaneseIndicator = article.isJapanese ? '🇯🇵 ' : '';
+        const japaneseTag = article.isJapanese ? 'JAPAN' : null;
 
         // Create related events from same source/category
         const relatedEvents = await this.getRelatedEvents(article);
 
         const eventProfile = {
             id: eventId,
-            name: article.source.toUpperCase(), // Changed: Use website name instead of event title
+            name: japaneseIndicator + article.source.toUpperCase(), // Add Japanese flag for Japanese sources
             subtitle: categoryIcon + ' ' + (article.category?.toUpperCase() || 'TRENDING'), // Show category with icon
             year: this.formatTimeAgo(article.pubDate),
             description: article.description || article.title, // Use full article title in description
@@ -169,9 +188,10 @@ class LiveTabsManager {
             },
             tags: [
                 categoryIcon + ' ' + (article.category?.toUpperCase() || 'TRENDING'),
+                japaneseTag ? japaneseTag : null,
                 'LIVE EVENT',
                 'AUTO-SAVED'
-            ],
+            ].filter(Boolean), // Remove null tags
             trending: [
                 // Keep the original event as the first trending item with full title and link
                 {
@@ -184,6 +204,7 @@ class LiveTabsManager {
             isRealTime: true,
             isLiveTab: true,
             isEventTab: true,
+            isJapanese: article.isJapanese || false,
             category: article.category,
             eventData: article,
             isLoading: false,
