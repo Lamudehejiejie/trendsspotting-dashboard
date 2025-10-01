@@ -381,21 +381,27 @@ class LiveTabsManager {
     }
 
     async getDefaultBackgroundForCategory(categoryKey) {
+        // Only use fallback backgrounds when no image was found from RSS
+        // These are high-quality, relevant images for each category
         const defaultBackgrounds = {
-            'trending': 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1920&h=1080&fit=crop&q=80',
+            'trending': null, // Let gradient background show through
             'tech': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1920&h=1080&fit=crop&q=80',
             'fashion': 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=1920&h=1080&fit=crop&q=80',
+            'fashion-asia': 'https://images.unsplash.com/photo-1493663284031-b7e3aaa27294?w=1920&h=1080&fit=crop&q=80', // Japanese fashion
             'music': 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1920&h=1080&fit=crop&q=80',
             'design': 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1920&h=1080&fit=crop&q=80',
+            'design-asia': 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=1920&h=1080&fit=crop&q=80', // Japanese architecture
             'art': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop&q=80',
-            'social-trends': 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1920&h=1080&fit=crop&q=80',
+            'art-asia': 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&h=1080&fit=crop&q=80', // Japanese art
+            'culture-asia': 'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=1920&h=1080&fit=crop&q=80', // Japanese culture
+            'social-trends': null, // Let gradient show through
             'entertainment': 'https://images.unsplash.com/photo-1489599126688-3704b6d13de7?w=1920&h=1080&fit=crop&q=80',
-            'campaigns': 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1920&h=1080&fit=crop&q=80',
+            'campaigns': null, // Let gradient show through
             'games': 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1920&h=1080&fit=crop&q=80',
-            'trends': 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1920&h=1080&fit=crop&q=80'
+            'trends': null // Let gradient show through
         };
 
-        return defaultBackgrounds[categoryKey] || defaultBackgrounds['trending'];
+        return defaultBackgrounds[categoryKey] || null; // Return null to show gradient instead
     }
 
     getAllEventProfiles() {

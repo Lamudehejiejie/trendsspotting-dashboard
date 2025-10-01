@@ -545,7 +545,7 @@ class RSSFeedParser {
                         throw new Error('XML parsing failed: ' + parseError.textContent);
                     }
 
-                    const articles = this.parseRSSContent(xmlDoc, feedConfig);
+                    const articles = await this.parseRSSContent(xmlDoc, feedConfig);
 
                     // Update successful proxy index for next rotation
                     this.currentProxyIndex = proxyIndex;
@@ -674,12 +674,12 @@ class RSSFeedParser {
         }
     }
 
-    parseRSSContent(xmlDoc, feedConfig) {
+    async parseRSSContent(xmlDoc, feedConfig) {
         const items = xmlDoc.querySelectorAll('item');
         const articles = [];
 
-        items.forEach((item, index) => {
-            if (index >= 10) return; // Limit to 10 articles per feed
+        for (let index = 0; index < Math.min(items.length, 10); index++) {
+            const item = items[index];
 
             const title = item.querySelector('title')?.textContent || '';
             const description = item.querySelector('description')?.textContent || '';
@@ -687,8 +687,8 @@ class RSSFeedParser {
             const pubDate = item.querySelector('pubDate')?.textContent || '';
             const category = item.querySelector('category')?.textContent || feedConfig.category;
 
-            // Extract image from various RSS fields
-            const imageUrl = this.extractImageFromRSS(item, description);
+            // Extract image from various RSS fields (enhanced with multiple methods)
+            const imageUrl = await this.extractImageFromRSS(item, description, feedConfig);
 
             // Filter for subculture relevance
             if (this.isSubcultureRelevant(title, description)) {
@@ -703,66 +703,264 @@ class RSSFeedParser {
                     relevanceScore: this.calculateRelevanceScore(title, description)
                 });
             }
-        });
+        }
 
         return articles.sort((a, b) => b.relevanceScore - a.relevanceScore);
     }
 
-    extractImageFromRSS(item, description) {
-        // Try different RSS image fields in order of preference
+    // Enhanced image extraction with multiple fallback methods
+    async extractImageFromRSS(item, description, feedConfig) {
         let imageUrl = null;
+        const imageUrls = []; // Collect all possible images
 
-        // Method 1: media:thumbnail or media:content
+        // Method 1: RSS media fields (highest priority)
         const mediaThumbnail = item.querySelector('media\\:thumbnail, thumbnail');
         if (mediaThumbnail) {
-            imageUrl = mediaThumbnail.getAttribute('url');
+            const url = mediaThumbnail.getAttribute('url');
+            if (url) imageUrls.push({ url, source: 'media:thumbnail', priority: 10 });
         }
 
         const mediaContent = item.querySelector('media\\:content, content');
-        if (!imageUrl && mediaContent && mediaContent.getAttribute('type')?.startsWith('image')) {
-            imageUrl = mediaContent.getAttribute('url');
+        if (mediaContent && mediaContent.getAttribute('type')?.startsWith('image')) {
+            const url = mediaContent.getAttribute('url');
+            if (url) imageUrls.push({ url, source: 'media:content', priority: 9 });
         }
 
-        // Method 2: enclosure with image type
-        const enclosure = item.querySelector('enclosure');
-        if (!imageUrl && enclosure && enclosure.getAttribute('type')?.startsWith('image')) {
-            imageUrl = enclosure.getAttribute('url');
+        // Method 2: Enclosure with image type
+        const enclosures = item.querySelectorAll('enclosure');
+        enclosures.forEach(enclosure => {
+            if (enclosure.getAttribute('type')?.startsWith('image')) {
+                const url = enclosure.getAttribute('url');
+                if (url) imageUrls.push({ url, source: 'enclosure', priority: 8 });
+            }
+        });
+
+        // Method 3: Featured image / thumbnail fields
+        const thumbnail = item.querySelector('thumbnail, image, featuredImage');
+        if (thumbnail) {
+            const url = thumbnail.textContent || thumbnail.getAttribute('url') || thumbnail.getAttribute('href');
+            if (url) imageUrls.push({ url, source: 'thumbnail', priority: 7 });
         }
 
-        // Method 3: Extract from description HTML
-        if (!imageUrl && description) {
-            const imgMatch = description.match(/<img[^>]+src=["']([^"']+)["']/i);
-            if (imgMatch) {
-                imageUrl = imgMatch[1];
+        // Method 4: Content fields with CDATA
+        const content = item.querySelector('content\\:encoded, content, description');
+        if (content) {
+            const contentText = content.textContent || content.innerHTML;
+            this.extractImagesFromHTML(contentText, imageUrls, 'content');
+        }
+
+        // Method 5: Description HTML parsing (multiple images)
+        if (description) {
+            this.extractImagesFromHTML(description, imageUrls, 'description');
+        }
+
+        // Method 6: Link field (sometimes points to images)
+        const link = item.querySelector('link');
+        if (link) {
+            const linkUrl = link.textContent || link.getAttribute('href');
+            if (linkUrl && this.isImageUrl(linkUrl)) {
+                imageUrls.push({ url: linkUrl, source: 'link', priority: 3 });
             }
         }
 
-        // Method 4: Look for image URLs in description text
-        if (!imageUrl && description) {
-            const urlMatch = description.match(/(https?:\/\/[^\s<>"']+\.(?:jpg|jpeg|png|gif|webp))/i);
-            if (urlMatch) {
-                imageUrl = urlMatch[1];
+        // Method 7: Try to extract from article URL (web scraping simulation)
+        const articleUrl = item.querySelector('link')?.textContent || item.querySelector('guid')?.textContent;
+        if (articleUrl && imageUrls.length === 0) {
+            const ogImage = await this.tryExtractOGImage(articleUrl, feedConfig);
+            if (ogImage) {
+                imageUrls.push({ url: ogImage, source: 'og:image', priority: 6 });
             }
         }
 
-        // Clean up the URL if found
-        if (imageUrl) {
-            // Remove any HTML entities
-            imageUrl = imageUrl.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-            
-            // Try to enhance image quality for known services
-            imageUrl = this.enhanceImageQuality(imageUrl);
-            
-            // Ensure it's a valid URL
-            try {
-                new URL(imageUrl);
-                return imageUrl;
-            } catch (e) {
+        // Sort by priority and filter valid URLs
+        const validImages = await this.validateAndPrioritizeImages(imageUrls);
+
+        if (validImages.length > 0) {
+            imageUrl = validImages[0].url;
+            console.log(`🖼️ Found image from ${validImages[0].source} for ${feedConfig.name}`);
+        }
+
+        return imageUrl;
+    }
+
+    // Extract multiple images from HTML content
+    extractImagesFromHTML(htmlContent, imageUrls, source) {
+        if (!htmlContent) return;
+
+        // Method 1: Standard img tags with various attribute patterns
+        const imgMatches = [
+            ...htmlContent.matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi),
+            ...htmlContent.matchAll(/<img[^>]+data-src=["']([^"']+)["'][^>]*>/gi),
+            ...htmlContent.matchAll(/<img[^>]+data-lazy-src=["']([^"']+)["'][^>]*>/gi),
+        ];
+
+        imgMatches.forEach((match, index) => {
+            const url = match[1];
+            if (url && !url.startsWith('data:')) {
+                imageUrls.push({
+                    url,
+                    source: `${source}:img[${index}]`,
+                    priority: index === 0 ? 6 : 5 - Math.min(index, 3)
+                });
+            }
+        });
+
+        // Method 2: Picture elements with source tags
+        const pictureMatches = htmlContent.matchAll(/<picture[^>]*>[\s\S]*?<source[^>]+srcset=["']([^"']+)["'][^>]*>[\s\S]*?<\/picture>/gi);
+        pictureMatches.forEach((match, index) => {
+            const srcset = match[1];
+            const firstImage = srcset.split(',')[0].trim().split(' ')[0];
+            if (firstImage) {
+                imageUrls.push({ url: firstImage, source: `${source}:picture[${index}]`, priority: 5 });
+            }
+        });
+
+        // Method 3: Background images in style attributes
+        const bgMatches = htmlContent.matchAll(/background-image:\s*url\(["']?([^"')]+)["']?\)/gi);
+        bgMatches.forEach((match, index) => {
+            imageUrls.push({ url: match[1], source: `${source}:bg[${index}]`, priority: 4 });
+        });
+
+        // Method 4: Direct image URLs in text (last resort)
+        const urlMatches = htmlContent.matchAll(/(https?:\/\/[^\s<>"']+\.(?:jpg|jpeg|png|gif|webp|avif)(?:\?[^\s<>"']*)?)/gi);
+        urlMatches.forEach((match, index) => {
+            if (index < 3) { // Only take first 3 to avoid spam
+                imageUrls.push({ url: match[1], source: `${source}:url[${index}]`, priority: 2 });
+            }
+        });
+    }
+
+    // Try to extract Open Graph image from article URL
+    async tryExtractOGImage(articleUrl, feedConfig) {
+        try {
+            // Only try this for high-priority feeds to avoid overwhelming requests
+            if (feedConfig.priority !== 'ultra-high' && feedConfig.priority !== 'high') {
                 return null;
             }
+
+            // Use a simple proxy to get the HTML content
+            const proxyUrl = PROXY_SERVICES[0] + encodeURIComponent(articleUrl);
+            const response = await fetch(proxyUrl, {
+                timeout: 5000,
+                headers: { 'User-Agent': 'TrendSpottingBot/1.0' }
+            });
+
+            if (!response.ok) return null;
+
+            const data = await response.json();
+            if (!data.contents) return null;
+
+            // Extract og:image from meta tags
+            const ogImageMatch = data.contents.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["'][^>]*>/i);
+            if (ogImageMatch) {
+                return ogImageMatch[1];
+            }
+
+            // Fallback: look for twitter:image
+            const twitterImageMatch = data.contents.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["'][^>]*>/i);
+            if (twitterImageMatch) {
+                return twitterImageMatch[1];
+            }
+
+        } catch (error) {
+            // Silently fail - this is just a bonus feature
+            return null;
+        }
+        return null;
+    }
+
+    // Validate URLs and prioritize images
+    async validateAndPrioritizeImages(imageUrls) {
+        const validImages = [];
+
+        for (const img of imageUrls) {
+            if (this.isValidImageUrl(img.url)) {
+                // Clean up the URL
+                let cleanUrl = img.url.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+
+                // Enhance image quality
+                cleanUrl = this.enhanceImageQuality(cleanUrl);
+
+                // Ensure it's a valid URL
+                try {
+                    new URL(cleanUrl);
+                    validImages.push({
+                        ...img,
+                        url: cleanUrl,
+                        qualityScore: this.calculateImageQualityScore(cleanUrl)
+                    });
+                } catch (e) {
+                    // Skip invalid URLs
+                }
+            }
         }
 
-        return null;
+        // Sort by priority, then by quality score
+        return validImages.sort((a, b) => {
+            if (a.priority !== b.priority) return b.priority - a.priority;
+            return b.qualityScore - a.qualityScore;
+        });
+    }
+
+    // Check if URL looks like an image
+    isImageUrl(url) {
+        if (!url || typeof url !== 'string') return false;
+        const imageExtensions = /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?.*)?$/i;
+        return imageExtensions.test(url) || url.includes('image') || url.includes('photo') || url.includes('img');
+    }
+
+    // Validate image URL more thoroughly
+    isValidImageUrl(url) {
+        if (!url || typeof url !== 'string') return false;
+
+        // Skip data URLs, placeholder images, and tracking pixels
+        if (url.startsWith('data:') ||
+            url.includes('placeholder') ||
+            url.includes('1x1.gif') ||
+            url.includes('tracking') ||
+            url.includes('pixel') ||
+            url.length < 10) {
+            return false;
+        }
+
+        // Must be http/https
+        if (!url.startsWith('http')) return false;
+
+        // Check for image indicators
+        return this.isImageUrl(url);
+    }
+
+    // Calculate image quality score based on URL characteristics
+    calculateImageQualityScore(url) {
+        let score = 50; // Base score
+
+        // Higher score for larger dimensions in filename
+        const dimensionMatch = url.match(/(\d+)x(\d+)/);
+        if (dimensionMatch) {
+            const width = parseInt(dimensionMatch[1]);
+            const height = parseInt(dimensionMatch[2]);
+            if (width >= 1200 || height >= 800) score += 30;
+            else if (width >= 800 || height >= 600) score += 20;
+            else if (width >= 400 || height >= 300) score += 10;
+        }
+
+        // Bonus for high-quality image services
+        if (url.includes('unsplash.com')) score += 20;
+        if (url.includes('pexels.com')) score += 20;
+        if (url.includes('cdn.')) score += 10;
+        if (url.includes('wp-content')) score += 15;
+
+        // Penalty for likely low-quality indicators
+        if (url.includes('thumb')) score -= 20;
+        if (url.includes('small')) score -= 15;
+        if (url.includes('icon')) score -= 25;
+        if (url.includes('avatar')) score -= 20;
+
+        // Bonus for image quality parameters
+        if (url.includes('q=') || url.includes('quality=')) score += 10;
+        if (url.includes('w=1920') || url.includes('width=1920')) score += 15;
+
+        return Math.max(0, Math.min(100, score));
     }
 
     enhanceImageQuality(imageUrl) {
