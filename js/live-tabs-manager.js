@@ -3,6 +3,9 @@ class LiveTabsManager {
         this.dashboardController = dashboardController;
         this.rssParser = new RSSFeedParser();
         this.profileGenerator = new DynamicProfileGenerator();
+
+        // Make RSS parser available for debugging
+        window.debugRSSParser = this.rssParser;
         this.eventProfiles = new Map(); // Changed from liveProfiles to eventProfiles
         this.savedProfiles = new Map(); // For auto-save functionality
         this.updateInterval = null;

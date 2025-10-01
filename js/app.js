@@ -81,23 +81,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Console welcome message
     console.log(`
-    🎨 Trendspotting Dashboard v2.0
-    ================================
-    
+    🎨 Trendspotting Dashboard v2.0 - Enhanced Reliability
+    ====================================================
+
     ✨ Features:
-    • Real-time RSS integration
-    • Interactive carousel navigation  
+    • Real-time RSS integration with 4 fallback proxies
+    • Exponential backoff retry logic
+    • Feed health monitoring & prioritization
+    • Interactive carousel navigation
     • Drag & scroll controls
     • Live content updates
-    
+
     🎛️ Controls:
     • Arrow keys: Navigate profiles
     • Shift + Arrow keys: Scroll carousel
     • Mouse drag: Scroll carousel
     • Mouse wheel: Scroll carousel
-    
-    🔧 Debug:
-    • Check console for RSS feed status
-    • Real-time updates every 15 minutes
+
+    🔧 Debug Commands (available after 2 seconds):
+    • debugRSSParser.logHealthReport() - View feed health status
+    • debugRSSParser.forceHealthCheck() - Force health check
+    • debugRSSParser.resetHealthData() - Reset health tracking
+    • debugRSSParser.getHealthReport() - Get raw health data
+
+    📊 RSS System:
+    • ${RSS_FEEDS.length} feeds across ${[...new Set(RSS_FEEDS.map(f => f.category))].length} categories
+    • Health monitoring every 5 minutes
+    • 3 retry attempts with exponential backoff
+    • 4 fallback proxy services for redundancy
     `);
+
+    // Delayed message to ensure debugRSSParser is available
+    setTimeout(() => {
+        if (window.debugRSSParser) {
+            console.log('🐛 RSS Parser debug interface is ready! Try: debugRSSParser.logHealthReport()');
+        }
+    }, 2000);
 });
