@@ -397,7 +397,7 @@ body {
 }
 
 .main-title {
-    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-size: clamp(1rem, 6vw, 5rem);
     font-weight: 200;
     line-height: 0.9;
     letter-spacing: -2px;
@@ -463,6 +463,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+
 }
 
 .social-handle {
@@ -488,6 +489,7 @@ body {
     gap: 40px;
     transition: all 0.3s ease;
     opacity: 1;
+
 }
 
 .description-text {
@@ -497,6 +499,18 @@ body {
     color: rgba(255, 255, 255, 0.8);
     max-width: 600px;
     filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.1));
+
+    /* Multi-line ellipsis support - works in modern browsers */
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* Show 4 lines max */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 15vh;
+
+    /* Fallback for older browsers */
+    word-wrap: break-word;
+    hyphens: auto;
 }
 
 .metrics {
@@ -953,6 +967,7 @@ body {
     
     .description-text {
         font-size: 16px;
+        -webkit-line-clamp: 3; /* Fewer lines on mobile */
     }
     
     .metrics {
