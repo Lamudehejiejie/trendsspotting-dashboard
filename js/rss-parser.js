@@ -700,7 +700,9 @@ class RSSFeedParser {
                     category,
                     source: feedConfig.name,
                     imageUrl: imageUrl,
-                    relevanceScore: this.calculateRelevanceScore(title, description)
+                    relevanceScore: this.calculateRelevanceScore(title, description, feedConfig),
+                    isJapanese: feedConfig.isJapanese || false, // Transfer Japanese flag from feed config
+                    sourcePriority: feedConfig.priority || 'medium' // Transfer source priority
                 });
             }
         }
@@ -1016,10 +1018,11 @@ class RSSFeedParser {
         return false;
     }
 
-    calculateRelevanceScore(title, description) {
+    calculateRelevanceScore(title, description, feedConfig) {
         const text = (title + ' ' + description).toLowerCase();
         let score = 0;
-        
+
+        // Base scoring from keyword matching
         for (const [category, keywords] of Object.entries(subcultureKeywords)) {
             for (const keyword of keywords) {
                 if (text.includes(keyword.toLowerCase())) {
@@ -1027,6 +1030,20 @@ class RSSFeedParser {
                 }
             }
         }
+
+        // Bonus points for Japanese content
+        if (feedConfig?.isJapanese) {
+            score += 5; // Significant bonus for Japanese sources
+
+            // Additional bonus if content mentions Japanese terms
+            const japaneseTerms = ['japan', 'japanese', 'tokyo', 'osaka', 'kawaii', 'harajuku', 'shibuya'];
+            for (const term of japaneseTerms) {
+                if (text.includes(term)) {
+                    score += 2;
+                }
+            }
+        }
+
         return score;
     }
 
@@ -1049,6 +1066,7 @@ class RSSFeedParser {
         const mediumPriorityFeeds = prioritizedFeeds.filter(feed => feed.priority === 'medium');
 
         console.log(`🌸 Processing ${ultraHighPriorityFeeds.length} ultra-high priority (Japanese) feeds first...`);
+        console.log('🎌 Japanese feeds:', ultraHighPriorityFeeds.map(f => f.name));
 
         // Fetch ultra-high priority feeds (Japanese sources) first
         const ultraHighPromises = ultraHighPriorityFeeds.map(feed => this.fetchFeed(feed));
@@ -1056,11 +1074,11 @@ class RSSFeedParser {
 
         ultraHighResults.forEach((result, index) => {
             if (result.status === 'fulfilled') {
-                // Mark Japanese articles for priority sorting
+                // Keep existing properties and only add sourcePriority
                 const articles = result.value.map(article => ({
                     ...article,
-                    isJapanese: ultraHighPriorityFeeds[index].isJapanese || false,
                     sourcePriority: 'ultra-high'
+                    // isJapanese is already set in parseRSSContent
                 }));
                 allArticles.push(...articles);
             } else {
@@ -1076,8 +1094,8 @@ class RSSFeedParser {
             if (result.status === 'fulfilled') {
                 const articles = result.value.map(article => ({
                     ...article,
-                    isJapanese: highPriorityFeeds[index].isJapanese || false,
                     sourcePriority: 'high'
+                    // isJapanese is already set in parseRSSContent
                 }));
                 allArticles.push(...articles);
             } else {
@@ -1094,8 +1112,8 @@ class RSSFeedParser {
                 if (result.status === 'fulfilled') {
                     const articles = result.value.map(article => ({
                         ...article,
-                        isJapanese: mediumPriorityFeeds[index].isJapanese || false,
                         sourcePriority: 'medium'
+                        // isJapanese is already set in parseRSSContent
                     }));
                     allArticles.push(...articles);
                 } else {
@@ -1105,7 +1123,10 @@ class RSSFeedParser {
         }
 
         // Enhanced sorting: Japanese content first, then by relevance and recency
-        return allArticles
+        const japaneseCount = allArticles.filter(a => a.isJapanese).length;
+        console.log(`🌸 Found ${japaneseCount}/${allArticles.length} Japanese articles before sorting`);
+
+        const sortedArticles = allArticles
             .sort((a, b) => {
                 // First priority: Japanese content
                 if (a.isJapanese && !b.isJapanese) return -1;
@@ -1124,6 +1145,11 @@ class RSSFeedParser {
                 return b.pubDate - a.pubDate;
             })
             .slice(0, 30); // Increased to top 30 articles for more Japanese content
+
+        const finalJapaneseCount = sortedArticles.filter(a => a.isJapanese).length;
+        console.log(`🎯 Final result: ${finalJapaneseCount}/${sortedArticles.length} Japanese articles in top results`);
+
+        return sortedArticles;
     }
 
     // Enhanced category-based fetching with health awareness
