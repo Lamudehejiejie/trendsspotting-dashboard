@@ -228,6 +228,12 @@ const RSS_FEEDS = [
 
     // Additional Design Sources
     {
+        name: 'Designboom',
+        url: 'https://www.designboom.com/feed/',
+        category: 'design',
+        priority: 'high'
+    },
+    {
         name: 'It\'s Nice That',
         url: 'https://www.itsnicethat.com/feed',
         category: 'design',
@@ -294,6 +300,58 @@ const RSS_FEEDS = [
         url: 'https://www.campaignlive.com/feed',
         category: 'campaigns',
         priority: 'medium'
+    },
+
+    // Japanese & Asian Sources
+    {
+        name: 'Vogue Japan',
+        url: 'https://www.vogue.co.jp/feed',
+        category: 'fashion-asia',
+        priority: 'high'
+    },
+    {
+        name: 'Hypebeast Japan',
+        url: 'https://hypebeast.com/jp/feed',
+        category: 'fashion-asia',
+        priority: 'medium'
+    },
+    {
+        name: 'Dezeen Japan Content',
+        url: 'https://www.dezeen.com/tag/japan/feed/',
+        category: 'design-asia',
+        priority: 'medium'
+    },
+    {
+        name: 'Tokyo Art Beat',
+        url: 'https://www.tokyoartbeat.com/en/rss/exhibition.xml',
+        category: 'art-asia',
+        priority: 'medium'
+    },
+    {
+        name: 'Spoon & Tamago',
+        url: 'https://www.spoon-tamago.com/feed/',
+        category: 'design-asia',
+        priority: 'high'
+    },
+
+    // Additional International Sources
+    {
+        name: 'Creative Review',
+        url: 'https://www.creativereview.co.uk/feed/',
+        category: 'design',
+        priority: 'medium'
+    },
+    {
+        name: 'Frame Magazine',
+        url: 'https://www.frameweb.com/feed',
+        category: 'design',
+        priority: 'medium'
+    },
+    {
+        name: 'AnOther Magazine',
+        url: 'https://www.anothermag.com/rss',
+        category: 'fashion',
+        priority: 'medium'
     }
 ];
 
@@ -308,7 +366,7 @@ const subcultureKeywords = {
 
     music: ['concert', 'festival', 'musician', 'electronic', 'underground', 'album', 'tour', 'sound', 'producer', 'DJ', 'remix', 'beat', 'artist', 'band', 'singer', 'songwriter', 'composer', 'rapper', 'hip hop', 'rock', 'pop', 'indie', 'alternative', 'jazz', 'classical', 'folk', 'country', 'blues', 'reggae', 'punk', 'metal', 'techno', 'house', 'trap', 'drill', 'grime', 'ambient', 'experimental', 'avant-garde', 'lo-fi', 'vinyl', 'streaming', 'playlist', 'single', 'EP', 'LP', 'debut', 'sophomore', 'collab', 'feature', 'verse', 'hook', 'chorus', 'bridge', 'sample', 'loop', 'instrumental', 'acoustic', 'live', 'session', 'studio', 'record label', 'independent', 'major label', 'breakthrough', 'viral', 'trending', 'chart', 'billboard', 'grammy', 'award', 'nomination', 'review', 'interview', 'spotlight', 'rising', 'emerging', 'established', 'legend', 'icon', 'influence', 'genre-bending', 'crossover', 'mainstream', 'niche', 'scene', 'movement', 'wave', 'era', 'generation'],
 
-    culture: ['subculture', 'youth', 'community', 'trend', 'movement', 'lifestyle', 'underground', 'emerging', 'viral', 'influencer', 'creator', 'cultural', 'social', 'society', 'generation', 'millennial', 'gen z', 'gen alpha', 'boomer', 'counterculture', 'mainstream', 'alternative', 'indie', 'hipster', 'aesthetic', 'vibe', 'mood', 'energy', 'zeitgeist', 'phenomenon', 'moment', 'era', 'period', 'wave', 'shift', 'evolution', 'revolution', 'transformation', 'change', 'progress', 'innovation', 'disruption', 'breakthrough', 'pioneer', 'trailblazer', 'maverick', 'rebel', 'activist', 'advocate', 'voice', 'platform', 'message', 'cause', 'mission', 'purpose', 'identity', 'expression', 'representation', 'diversity', 'inclusion', 'equity', 'justice', 'awareness', 'consciousness', 'mindfulness', 'wellness', 'mental health', 'self-care', 'empowerment', 'authenticity', 'vulnerability', 'transparency', 'connection', 'belonging', 'tribe', 'collective', 'collaborative', 'participatory', 'democratic', 'grassroots', 'organic', 'spontaneous', 'genuine', 'raw', 'real', 'honest', 'truthful'],
+    culture: ['subculture', 'youth', 'community', 'trend', 'movement', 'lifestyle', 'underground', 'emerging', 'viral', 'influencer', 'creator', 'cultural', 'social', 'society', 'generation', 'millennial', 'gen z', 'gen alpha', 'boomer', 'counterculture', 'mainstream', 'alternative', 'indie', 'hipster', 'aesthetic', 'vibe', 'mood', 'energy', 'zeitgeist', 'phenomenon', 'moment', 'era', 'period', 'wave', 'shift', 'evolution', 'revolution', 'transformation', 'change', 'progress', 'innovation', 'disruption', 'breakthrough', 'pioneer', 'trailblazer', 'maverick', 'rebel', 'activist', 'advocate', 'voice', 'platform', 'message', 'cause', 'mission', 'purpose', 'identity', 'expression', 'representation', 'diversity', 'inclusion', 'equity', 'justice', 'awareness', 'consciousness', 'mindfulness', 'wellness', 'mental health', 'self-care', 'empowerment', 'authenticity', 'vulnerability', 'transparency', 'connection', 'belonging', 'tribe', 'collective', 'collaborative', 'participatory', 'democratic', 'grassroots', 'organic', 'spontaneous', 'genuine', 'raw', 'real', 'honest', 'truthful', 'japan', 'japanese', 'tokyo', 'osaka', 'kawaii', 'manga', 'anime', 'otaku', 'harajuku', 'shibuya', 'minimalism', 'zen', 'wabi-sabi', 'origami', 'kimono'],
 
     design: ['design', 'interface', 'UX', 'UI', 'creative', 'visual', 'typography', 'branding', 'aesthetic', 'minimalist', 'graphic design', 'web design', 'product design', 'industrial design', 'interior design', 'architecture', 'landscape', 'urban planning', 'sustainable design', 'eco-friendly', 'green design', 'circular design', 'human-centered', 'user-centered', 'accessibility', 'inclusive design', 'universal design', 'responsive', 'adaptive', 'mobile-first', 'desktop', 'tablet', 'cross-platform', 'wireframe', 'prototype', 'mockup', 'concept', 'iteration', 'feedback', 'testing', 'research', 'strategy', 'methodology', 'framework', 'system', 'guideline', 'standard', 'best practice', 'innovation', 'creativity', 'inspiration', 'mood board', 'color palette', 'font', 'typeface', 'layout', 'composition', 'hierarchy', 'balance', 'contrast', 'harmony', 'rhythm', 'proportion', 'scale', 'grid', 'whitespace', 'negative space', 'visual language', 'design thinking', 'design sprint', 'agile design', 'lean UX', 'design ops', 'design system', 'component library', 'style guide', 'brand identity', 'logo', 'icon', 'illustration', 'photography', 'video', 'animation', 'motion graphics', 'interaction design', 'experience design', 'service design', 'design strategy'],
 
@@ -795,7 +853,10 @@ class RSSFeedParser {
             (category === 'games' && feed.category === 'games') ||
             (category === 'gaming' && feed.category === 'gaming') ||
             (category === 'trends' && feed.category === 'trends') ||
-            (category === 'culture' && feed.category === 'culture')
+            (category === 'culture' && feed.category === 'culture') ||
+            (category === 'fashion' && feed.category === 'fashion-asia') ||
+            (category === 'design' && feed.category === 'design-asia') ||
+            (category === 'art' && feed.category === 'art-asia')
         );
 
         // Prioritize healthy feeds
@@ -859,7 +920,10 @@ class RSSFeedParser {
     getFeedsByCategory(category) {
         return RSS_FEEDS.filter(feed => {
             const matchesCategory = feed.category === category ||
-                                  feed.category.includes(category);
+                                  feed.category.includes(category) ||
+                                  (category === 'fashion' && feed.category === 'fashion-asia') ||
+                                  (category === 'design' && feed.category === 'design-asia') ||
+                                  (category === 'art' && feed.category === 'art-asia');
 
             const health = this.feedHealthStatus.get(feed.url);
             const isHealthy = !health || health.status !== 'unhealthy';
